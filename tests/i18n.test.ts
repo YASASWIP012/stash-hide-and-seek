@@ -50,3 +50,17 @@ describe('robot voice', () => {
     expect(sampleReplay(run.events, 0, room.spawn, {}).say).toMatch(/likely$/);
   });
 });
+
+describe('dresser joints from Lux3D articulation', () => {
+  it('uses the articulation joints and part meshes for all three drawers', () => {
+    const drawers = room.containers.filter((c) => c.id.startsWith('dresser-'));
+    expect(drawers).toHaveLength(3);
+    for (const c of drawers) {
+      expect(c.joint.source).toBe('lux3d-articulation');
+      expect(c.joint.upper).toBeGreaterThan(0.32);
+      expect(c.joint.upper).toBeLessThan(0.34);
+      expect(readFileSync(`public/${c.mesh}`).byteLength).toBeGreaterThan(100_000);
+    }
+    expect(MESSAGES.zh.provNote('Lux3D articulation of the split dresser: x')).toContain('关节');
+  });
+});

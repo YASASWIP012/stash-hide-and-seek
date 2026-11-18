@@ -84,7 +84,7 @@ const en: Messages = {
   genDone: (id) => `Done. Task ${id}. It is now selected: hide it in the room above.`,
   genFail: (why) => `Live generation is unavailable right now (${why}). The ready-made objects still work.`,
   placeholderRoom:
-    'Placeholder room. Furniture is real Lux3D output; the moving parts are estimated boxes until the first phone scan is processed.',
+    "Placeholder room. Furniture is real Lux3D output, and the dresser's drawers move on Lux3D joints. The other moving parts are estimated boxes until the first phone scan is processed.",
   realRoom: (owner, date) => `Real room${owner ? ` from ${owner}` : ''}, scanned ${date}.`,
   noProv: 'No API results recorded for this room yet.',
   provMeta: (id, c, date) => `task ${id} · ${c} credit${c === 1 ? '' : 's'} · ${date}`,
@@ -131,13 +131,16 @@ const zh: Messages = {
   genStart: 'Lux3D 正在生成你的物品，通常需要 20 到 40 秒。',
   genDone: (id) => `完成，任务 ${id}。它已被选中，把它藏进上面的房间吧。`,
   genFail: (why) => `实时生成暂时不可用（${why}）。现成的物品照样能玩。`,
-  placeholderRoom: '占位房间。家具是真实的 Lux3D 生成结果；在第一段手机扫描处理完成之前，可活动部件是按估计尺寸做的方块。',
+  placeholderRoom: '占位房间。家具是真实的 Lux3D 生成结果，斗柜的抽屉靠 Lux3D 生成的关节活动。在第一段手机扫描处理完成之前，其余可活动部件是按估计尺寸做的方块。',
   realRoom: (owner, date) => `真实房间${owner ? `，来自 ${owner}` : ''}，扫描于 ${date}。`,
   noProv: '这个房间还没有记录任何 API 结果。',
   provMeta: (id, c, date) => `任务 ${id} · ${c} 积分 · ${date}`,
   provNote: (note) => {
     const m = note.match(/^Lux3D Turbo text-to-3D, size by aiPredictSize: (.*)$/);
-    return m ? `Lux3D Turbo 文生 3D，尺寸由 aiPredictSize 预测。提示词：${m[1]}` : note;
+    if (m) return `Lux3D Turbo 文生 3D，尺寸由 aiPredictSize 预测。提示词：${m[1]}`;
+    if (note.startsWith('Lux3D part split of the dresser')) return 'Lux3D 部件拆分：把斗柜的三个抽屉从柜体上分离出来';
+    if (note.startsWith('Lux3D articulation of the split dresser')) return 'Lux3D 关节生成：为拆分后的斗柜生成三个滑动关节（轴和行程），以 URDF 返回';
+    return note;
   },
   urdfNote: (n, est) => `共 ${n} 个可活动部件，其中 ${est} 个的关节限位是估计值，文件里已注明。`,
   planAria: '房间平面图。点击家具即可打开。',
@@ -186,9 +189,9 @@ export const ZH_HTML: Record<string, string> = {
     '<span class="status status--next">计划中</span><p class="t-title">2. 识别家具</p><p>Spatial Understanding（空间理解）读取扫描，给出墙、门，以及每件家具的 3D 包围盒。</p>',
   'how.t3':
     '<span class="status status--done">已在使用</span><p class="t-title">3. Lux3D 生成每件家具</p><p>Lux3D 按真实尺寸生成带纹理的模型，尺寸来自它自带的尺寸预测。</p>',
-  'how.t4': '<span class="status status--next">下一步</span><p class="t-title">4. 拆分部件</p><p>Lux3D 部件拆分把抽屉面板和柜门从柜体上分离出来。</p>',
+  'how.t4': '<span class="status status--done">斗柜已完成</span><p class="t-title">4. 拆分部件</p><p>Lux3D 部件拆分把抽屉面板和柜门从柜体上分离出来。</p>',
   'how.t5':
-    '<span class="status status--next">下一步</span><p class="t-title">5. 添加关节</p><p>Lux3D 关节生成把每个部件变成可滑动或可转动的关节，游戏和机器人用的是同一套关节。</p>',
+    '<span class="status status--done">斗柜已完成</span><p class="t-title">5. 添加关节</p><p>Lux3D 关节生成把每个部件变成可滑动或可转动的关节，游戏和机器人用的是同一套关节。</p>',
   'how.t6':
     '<span class="status status--done">已在使用</span><p class="t-title">6. 藏、找、分享</p><p>机器人基于这些关节规划搜索。同一套关节还能导出为 URDF，供机器人仿真器使用。</p>',
   'how.saved': '这个房间回放的已保存结果',
@@ -208,7 +211,7 @@ export const ZH_HTML: Record<string, string> = {
   'faq.1':
     '<summary>这是真实房间吗？</summary><p>还不是。示例房间是手工布置的占位房间。里面的家具是真实的 Lux3D 生成结果，由文字生成，尺寸来自 Lux3D 的尺寸预测。第一个用手机视频扫描的房间会替换它。</p>',
   'faq.2':
-    '<summary>抽屉真的能动吗？</summary><p>它们靠关节活动，每个关节都有类型、轴和限位。在占位房间里，活动部件是方块，限位是估计值。部件拆分和关节生成会用 Lux3D 的结果替换这两者。</p>',
+    '<summary>抽屉真的能动吗？</summary><p>能。它们靠关节活动，每个关节都有类型、轴和限位。斗柜的三个抽屉是 Lux3D 部件拆分得到的部件，关节来自 Lux3D 关节生成，每个能拉出约 0.33 米。床头柜抽屉、衣柜和房门仍是方块，限位是估计值，页面和机器人文件里都有注明。</p>',
   'faq.3':
     '<summary>机器人是 AI 吗？</summary><p>它是一个模拟机器人，搜索规则是公开的：先打开按所花时间算最有希望的位置，没找到就排除。它的概率从家具大小和类型出发，再根据记录下来的藏法调整。除此之外，它不会学习。</p>',
   'faq.4': '<summary>玩要花钱吗？</summary><p>不用。游戏回放的是已保存的结果。只有可选的实时生成会调用 API，而且每天有上限。</p>',

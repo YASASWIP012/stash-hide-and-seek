@@ -43,7 +43,12 @@
         ],
         "yaw": 0
       },
-      "mesh": "objects/dresser.glb"
+      "mesh": "rooms/demo/pieces/dresser-body.glb",
+      "meshOrigin": [
+        -0.55,
+        0.0,
+        -1.36
+      ]
     },
     {
       "id": "nightstand",
@@ -90,13 +95,13 @@
       "box": {
         "center": [
           -0.55,
-          0.73,
-          -1.33
+          0.7613,
+          -1.3302
         ],
         "size": [
-          0.8,
-          0.22,
-          0.44
+          0.8175,
+          0.2134,
+          0.4159
         ],
         "yaw": 0
       },
@@ -109,17 +114,18 @@
         ],
         "origin": [
           -0.55,
-          0.73,
-          -1.33
+          0.7308,
+          -1.3285
         ],
         "lower": 0,
-        "upper": 0.32,
-        "source": "estimate"
+        "upper": 0.3301,
+        "source": "lux3d-articulation"
       },
       "approach": [
         -0.55,
         -0.58
-      ]
+      ],
+      "mesh": "rooms/demo/pieces/dresser-drawer-top.glb"
     },
     {
       "id": "dresser-middle",
@@ -128,13 +134,13 @@
       "box": {
         "center": [
           -0.55,
-          0.45,
-          -1.33
+          0.542,
+          -1.3292
         ],
         "size": [
-          0.8,
-          0.24,
-          0.44
+          0.8175,
+          0.2173,
+          0.4197
         ],
         "yaw": 0
       },
@@ -147,17 +153,18 @@
         ],
         "origin": [
           -0.55,
-          0.45,
-          -1.33
+          0.5112,
+          -1.3272
         ],
         "lower": 0,
-        "upper": 0.32,
-        "source": "estimate"
+        "upper": 0.3301,
+        "source": "lux3d-articulation"
       },
       "approach": [
         -0.55,
         -0.58
-      ]
+      ],
+      "mesh": "rooms/demo/pieces/dresser-drawer-middle.glb"
     },
     {
       "id": "dresser-bottom",
@@ -166,13 +173,13 @@
       "box": {
         "center": [
           -0.55,
-          0.17,
-          -1.33
+          0.318,
+          -1.329
         ],
         "size": [
-          0.8,
-          0.24,
-          0.44
+          0.8175,
+          0.2231,
+          0.4199
         ],
         "yaw": 0
       },
@@ -185,17 +192,18 @@
         ],
         "origin": [
           -0.55,
-          0.17,
-          -1.33
+          0.2861,
+          -1.3277
         ],
         "lower": 0,
-        "upper": 0.32,
-        "source": "estimate"
+        "upper": 0.3264,
+        "source": "lux3d-articulation"
       },
       "approach": [
         -0.55,
         -0.58
-      ]
+      ],
+      "mesh": "rooms/demo/pieces/dresser-drawer-bottom.glb"
     },
     {
       "id": "nightstand-drawer",
@@ -370,6 +378,22 @@
       "date": "2026-11-18",
       "artifact": "objects/wardrobe.glb",
       "note": "Lux3D Turbo text-to-3D, size by aiPredictSize: a tall two-door wooden bedroom wardrobe, closed doors, simple modern style"
+    },
+    {
+      "step": "lux3d.part-split",
+      "taskId": "8305408",
+      "credits": 30,
+      "date": "2026-11-18",
+      "artifact": "pieces/dresser-body.glb",
+      "note": "Lux3D part split of the dresser: separates the three drawers from the body"
+    },
+    {
+      "step": "lux3d.articulation",
+      "taskId": "8305519",
+      "credits": 28,
+      "date": "2026-11-18",
+      "artifact": "pieces/dresser-drawer-top.glb",
+      "note": "Lux3D articulation of the split dresser: three sliding joints with axis and travel, returned as URDF"
     }
   ]
 }

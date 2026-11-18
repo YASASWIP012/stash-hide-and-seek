@@ -21,10 +21,14 @@
     "@manycore/aholo-viewer": "^1.14.0"
   },
   "devDependencies": {
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
     "@playwright/test": "^1.65.1",
     "@types/node": "^22.20.5",
     "@vercel/node": "^31.0.2",
     "jsdom": "^25.0.1",
+    "meshoptimizer": "^0.22.0",
+    "sharp": "^0.33.5",
     "typescript": "^5.9.3",
     "vite": "^7.3.8",
     "vitest": "^3.2.7"

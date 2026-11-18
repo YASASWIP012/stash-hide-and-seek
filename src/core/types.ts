@@ -43,6 +43,8 @@ export interface Fixture {
   label: string;
   box: Box;
   mesh?: string;
+  /** Where the mesh's own origin goes in the room. Defaults to the box centre (Lux3D text-to-3D meshes are centred). */
+  meshOrigin?: Vec3;
 }
 
 /** One real API call that produced part of this room. Shown on the "how it was made" page. */

@@ -11,12 +11,12 @@ Live demo: https://stash-hide-and-seek.vercel.app (no account needed; Chinese at
 | Phone video to 3D room | Aholo Reality (3D Gaussian splat) | Waiting for the first room video |
 | Find the furniture | Aholo Spatial Understanding | Planned |
 | Make each piece of furniture | Lux3D, with size prediction | Done for the demo room |
-| Separate drawers and doors | Lux3D part split | Next |
-| Add joints | Lux3D articulation | Next |
+| Separate drawers and doors | Lux3D part split | Done for the dresser |
+| Add joints | Lux3D articulation | Done for the dresser |
 | Render and play | Aholo Viewer | Done |
 | Robot export | URDF from the same joints | Done |
 
-The demo room is a placeholder laid out by hand. Its furniture is real Lux3D output, and the task ids are listed on the page. Its moving parts are boxes with estimated joint limits until part split and articulation run.
+The demo room is a placeholder laid out by hand. Its furniture is real Lux3D output, and the task ids are listed on the page. The dresser's three drawers are Lux3D parts (part split, task 8305408) on joints from Lux3D articulation (task 8305519), which returned a URDF with a sliding joint and about 0.33 m of travel per drawer. The nightstand drawer, the wardrobe and the room door are still boxes with estimated limits.
 
 The robot is a simulated agent with a stated rule: open the spot with the best chance per second of effort, then rule it out. Its odds start from container size and type and shift with logged hides.
 

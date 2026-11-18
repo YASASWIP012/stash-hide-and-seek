@@ -24,6 +24,7 @@ import { jointValue, orbitEye, pickBox, pixelRay, type Orbit } from '../core/geo
 import { StageError, type Stage } from './stage.ts';
 
 type Rgb = [number, number, number];
+const HIGHLIGHT: Rgb = [0.3, 0.42, 1];
 
 function boxGeometry(w: number, h: number, d: number) {
   const x = w / 2, y = h / 2, z = d / 2;
@@ -71,6 +72,8 @@ interface PartNode {
   open: number;
   material: InstanceType<typeof MeshPhongMaterial>;
   base: Rgb;
+  /** For parts drawn with a Lux3D mesh: a thin plate on the front, shown only while highlighted. */
+  plate?: Object3D;
 }
 
 export class AholoStage implements Stage {
@@ -203,7 +206,7 @@ export class AholoStage implements Stage {
         try {
           if (!f.mesh) throw new Error('no mesh');
           const node = await this.loadGlb(`${baseUrl}${f.mesh}`);
-          node.position.set(...f.box.center);
+          node.position.set(...(f.meshOrigin ?? f.box.center));
           node.rotation.y = f.box.yaw;
           scene.add(node);
         } catch {
@@ -229,9 +232,15 @@ export class AholoStage implements Stage {
         scene.add(pivot);
         this.parts.set(c.id, { c, node: pivot, closed, open: 0, material, base: color });
       } else {
-        const node = boxMesh(closed, color, material);
-        scene.add(node);
-        this.parts.set(c.id, { c, node, closed, open: 0, material, base: color });
+        const lux = c.mesh ? await this.partMesh(`${baseUrl}${c.mesh}`, c, closed) : null;
+        if (lux) {
+          scene.add(lux.node);
+          this.parts.set(c.id, { c, node: lux.node, closed, open: 0, material: lux.material, base: HIGHLIGHT, plate: lux.plate });
+        } else {
+          const node = boxMesh(closed, color, material);
+          scene.add(node);
+          this.parts.set(c.id, { c, node, closed, open: 0, material, base: color });
+        }
       }
     }
 
@@ -243,6 +252,29 @@ export class AholoStage implements Stage {
     scene.add(this.robot);
     this.setRobot(room.spawn, Math.PI);
     this.dirty = true;
+  }
+
+  /**
+   * A Lux3D part mesh rides on a node at the part's closed centre. The mesh's own frame is the
+   * joint frame from articulation, so it is offset by (joint origin - centre). Null if it fails to load.
+   */
+  private async partMesh(url: string, c: Container, closed: Box) {
+    try {
+      const glb = await this.loadGlb(url);
+      const node = new Object3D();
+      node.position.set(...closed.center);
+      node.rotation.y = closed.yaw;
+      glb.position.set(c.joint.origin[0] - closed.center[0], c.joint.origin[1] - closed.center[1], c.joint.origin[2] - closed.center[2]);
+      node.add(glb);
+      const material = mat(HIGHLIGHT);
+      const plate = boxMesh({ center: [0, 0, closed.size[2] / 2 + 0.008], size: [closed.size[0] * 0.98, closed.size[1] * 0.96, 0.012], yaw: 0 }, HIGHLIGHT, material);
+      plate.visible = false;
+      node.add(plate);
+      return { node, plate, material };
+    } catch (e) {
+      console.warn(`part mesh ${url} failed, using a box`, e);
+      return null;
+    }
   }
 
   setOpen(containerId: string, fraction: number): void {
@@ -311,7 +343,11 @@ export class AholoStage implements Stage {
 
   highlight(containerId: string | null): void {
     for (const [id, p] of this.parts) {
-      const c = id === containerId ? ([0.3, 0.42, 1] as Rgb) : p.base;
+      if (p.plate) {
+        p.plate.visible = id === containerId;
+        continue;
+      }
+      const c = id === containerId ? HIGHLIGHT : p.base;
       p.material.color = new Color(c[0], c[1], c[2]).cloneReadonly();
     }
     this.dirty = true;
