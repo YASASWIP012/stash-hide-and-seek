@@ -5,6 +5,18 @@
 import { json, key, lux, tasksToday } from './_lux.js';
 
 const DAILY_CAP = Number(process.env.LIVE_DAILY_CAP ?? 3);
+const PER_VISITOR_MS = 10 * 60 * 1000;
+
+// Best-effort per-visitor limit (per server instance). The daily cap above is the hard limit:
+// it counts every task on the account for the day through the Lux3D API, so it holds across instances.
+const lastByVisitor = new Map<string, number>();
+export function visitorAllowed(id: string, now = Date.now()): boolean {
+  const last = lastByVisitor.get(id);
+  if (last !== undefined && now - last < PER_VISITOR_MS) return false;
+  lastByVisitor.set(id, now);
+  if (lastByVisitor.size > 5000) lastByVisitor.clear();
+  return true;
+}
 
 export async function POST(request: Request): Promise<Response> {
   if (!key()) return json({ ok: false, reason: 'live generation is switched off' }, 503);
@@ -18,6 +30,8 @@ export async function POST(request: Request): Promise<Response> {
     /* handled below */
   }
   if (prompt.length < 2) return json({ ok: false, reason: 'type a short object name' }, 400);
+  const visitor = (request.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0]!.trim();
+  if (!visitorAllowed(visitor)) return json({ ok: false, reason: 'one live object per visitor every 10 minutes' }, 429);
   try {
     if ((await tasksToday()) >= DAILY_CAP) return json({ ok: false, reason: "today's live limit is reached" }, 429);
     const taskId = await lux<number>('/global/lux3d/v1/generate/text-to-3d/task/create', {

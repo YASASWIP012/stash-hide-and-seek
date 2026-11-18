@@ -4,7 +4,14 @@ dist/
 .env*.local
 .env.local
 cache/files/
-rooms/raw/
 test-results/
 playwright-report/
 .DS_Store
+
+# A friend's room video, and anything made from it, stays local until they consent in writing.
+# Remove the scan line for a room only after that consent is recorded in public/proof/records.json.
+rooms/raw/
+rooms/**/*.mov
+rooms/**/*.mp4
+*.insv
+public/rooms/*/scan.*
