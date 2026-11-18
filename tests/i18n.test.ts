@@ -4,6 +4,7 @@ import { detectLang, MESSAGES, ZH_ATTR, ZH_HTML } from '../src/i18n.ts';
 import { planSearch } from '../src/core/search.ts';
 import { sampleReplay } from '../src/core/timeline.ts';
 import type { RoomManifest } from '../src/core/types.ts';
+import { roomToUrdf } from '../src/core/urdf.ts';
 
 const html = readFileSync('index.html', 'utf8');
 const room = JSON.parse(readFileSync('public/rooms/demo/room.json', 'utf8')) as RoomManifest;
@@ -62,5 +63,9 @@ describe('dresser joints from Lux3D articulation', () => {
       expect(readFileSync(`public/${c.mesh}`).byteLength).toBeGreaterThan(100_000);
     }
     expect(MESSAGES.zh.provNote('Lux3D articulation of the split dresser: x')).toContain('关节');
+    const urdf = roomToUrdf(room);
+    expect(urdf.match(/limits from lux3d-articulation/g)).toHaveLength(3);
+    // Y-up part meshes are turned Z-up in the robot file
+    expect(urdf.match(/rpy="1.5708 0 0"\/><geometry><mesh/g)).toHaveLength(3);
   });
 });

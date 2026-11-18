@@ -80,6 +80,16 @@ if (step === 'all') {
   await shot('11-how', page.locator('#how'));
   await shot('12-export', page.locator('#export'));
 }
+if (step === 'dresser') {
+  // Close-up of a Lux3D drawer on its Lux3D joint, pulled out
+  await page.goto(`${BASE}/?lang=en#play`);
+  await ready();
+  await page.locator('#stage').click({ position: { x: 395, y: 212 } }); // dresser top drawer
+  await page.waitForTimeout(700);
+  const b = (await page.locator('#stage').boundingBox())!;
+  await page.screenshot({ path: out('13-dresser-open'), quality: 85, type: 'jpeg', clip: { x: b.x + 230, y: b.y + 120, width: 330, height: 220 } });
+  await page.waitForTimeout(400);
+}
 if (step === 'plan') {
   await page.goto(`${BASE}/?plan=1&lang=en#play`);
   await page.waitForTimeout(1500);

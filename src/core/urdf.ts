@@ -30,9 +30,12 @@ function containerXml(c: Container, toZup: (a: readonly number[]) => number[]): 
   const center = v(toZup(c.box.center));
   const origin = v(toZup(c.joint.origin));
   const axis = v(toZup(c.joint.axis));
-  const visual = c.mesh
-    ? `<geometry><mesh filename="${esc(c.mesh)}"/></geometry>`
-    : `<geometry><box size="${size}"/></geometry>`;
+  // The part link's frame is the joint frame, so geometry is placed relative to the joint origin.
+  const zc = toZup(c.box.center), zo = toZup(c.joint.origin);
+  const offset = v([zc[0]! - zo[0]!, zc[1]! - zo[1]!, zc[2]! - zo[2]!]);
+  const boxGeom = `<origin xyz="${offset}" rpy="0 0 0"/><geometry><box size="${size}"/></geometry>`;
+  // Lux3D part meshes are authored in the joint frame, Y-up; roll +90 degrees turns them Z-up.
+  const visual = c.mesh ? `<origin xyz="0 0 0" rpy="1.5708 0 0"/><geometry><mesh filename="${esc(c.mesh)}"/></geometry>` : boxGeom;
   return [
     `  <link name="${id}_body">`,
     `    <collision><geometry><box size="${size}"/></geometry></collision>`,
@@ -44,7 +47,7 @@ function containerXml(c: Container, toZup: (a: readonly number[]) => number[]): 
     '  </joint>',
     `  <link name="${id}_part">`,
     `    <visual>${visual}</visual>`,
-    `    <collision><geometry><box size="${size}"/></geometry></collision>`,
+    `    <collision>${boxGeom}</collision>`,
     '  </link>',
     `  <!-- ${esc(c.label)}: limits from ${c.joint.source}${c.joint.measured !== undefined ? `, tape-measured travel ${f(c.joint.measured)}` : ''} -->`,
     `  <joint name="${id}_joint" type="${c.joint.type}">`,

@@ -96,7 +96,7 @@
       <h3>Aholo 工具的作用</h3>
       <ul>
         <li><b>Lux3D 文生 3D</b>：房间里的斗柜、床头柜、衣柜和钥匙都由 Lux3D 生成（4 个任务，任务号见第 6 页），尺寸来自 Lux3D 的尺寸预测（aiPredictSize）。</li>
-        <li><b>Lux3D 部件拆分和关节生成</b>：已对斗柜运行成功（任务 8305408 和 8305519）。结果文件还没有下载进游戏，所以目前的抽屉仍是按估计尺寸做的方块，页面上也这样标注。</li>
+        <li><b>Lux3D 部件拆分和关节生成</b>：斗柜已完成（任务 8305408 和 8305519）。三个抽屉是 Lux3D 拆分出的真实部件，在 Lux3D 返回的 URDF 滑动关节上移动，每个约 0.33 米行程。床头柜、衣柜和房门仍是估计尺寸的方块，页面上有注明。</li>
         <li><b>Aholo Viewer</b>：负责 3D 渲染和交互。WebGL 不可用时，自动退回到同样能玩的平面图。</li>
         <li><b>Aholo Reality 和空间理解</b>：计划用于把真实卧室的手机视频重建成 3D 房间并识别家具，正在等待第一段房间视频。</li>
       </ul>
@@ -106,8 +106,8 @@
       <p>机器人不是学出来的策略，而是规则公开的模拟智能体：每一步打开“概率除以所需时间”最高的位置，没找到就排除。初始概率由家具体积和类型决定，再用玩家记录过的藏法做贝叶斯更新。同一套关节可以导出为 URDF，供机器人仿真器使用。</p>
       <h3>现在的状态（2026 年 11 月 18 日）</h3>
       <ul>
-        <li>网站已上线，代码公开。45 个单元测试和 12 个线上浏览器测试全部通过，CI 正常。</li>
-        <li>示例房间是手工布置的占位房间，关节限位是估计值。真实房间扫描和外部玩家记录都还没有。</li>
+        <li>网站已上线，代码公开。46 个单元测试和 12 个线上浏览器测试全部通过，CI 正常。</li>
+        <li>示例房间是手工布置的占位房间；除斗柜外，其余关节限位是估计值。真实房间扫描和外部玩家记录都还没有。</li>
         <li>评委路径只回放已保存的结果，不消耗积分，也不依赖实时 API。实时生成是可选功能，每天最多 3 次。</li>
       </ul>
       <figure style="margin-top:8px"><img src="shots/09-zh-robot.jpg" alt="中文界面下的机器人搜索"><figcaption>中文界面：机器人在床头柜抽屉里找到了钥匙。右侧是它对每个位置的概率判断和本局结果。</figcaption></figure>
@@ -153,18 +153,18 @@
 <section class="page">
   <div class="eyebrow">Use of Manycore tools</div>
   <h2>What each Aholo tool does in Stash</h2>
-  <p class="lead">A drawer in a flat image cannot be opened. The game needs real 3D geometry, split into parts, with a joint on each moving part. The table says which steps are in the live game today and which have run but are not wired in yet.</p>
+  <p class="lead">A drawer in a flat image cannot be opened. The game needs real 3D geometry, split into parts, with a joint on each moving part. The table says which steps are in the live game today and which are still to come.</p>
   <table style="margin-top:6px;">
     <tr><th style="width:24%">Tool</th><th>Role in Stash</th><th style="width:22%">Evidence</th><th style="width:13%">Status</th></tr>
     <tr><td><b>Lux3D text-to-3D</b> (G1-Turbo)</td><td>Generates the dresser, nightstand, wardrobe and the keys you hide, as textured GLB models.</td><td class="mono">tasks 8274600, 8274825, 8274976, 8275152</td><td><span class="pill done">In the game</span></td></tr>
     <tr><td><b>Lux3D size prediction</b> (aiPredictSize)</td><td>Gives each piece a real-world size, so the drawers and the robot share one metric scale.</td><td>Sizes on page 6</td><td><span class="pill done">In the game</span></td></tr>
-    <tr><td><b>Lux3D part split</b></td><td>Separates the drawer fronts from the dresser body, so each drawer can move on its own.</td><td class="mono">task 8305408, succeeded</td><td><span class="pill ran">Ran; not wired in</span></td></tr>
-    <tr><td><b>Lux3D articulation</b></td><td>Adds a sliding joint to each drawer. These joints replace the estimated ones, and the robot and the URDF export read the same joints.</td><td class="mono">task 8305519, succeeded</td><td><span class="pill ran">Ran; not wired in</span></td></tr>
+    <tr><td><b>Lux3D part split</b></td><td>Separates the drawer fronts from the dresser body, so each drawer can move on its own.</td><td class="mono">task 8305408</td><td><span class="pill done">In the game (dresser)</span></td></tr>
+    <tr><td><b>Lux3D articulation</b></td><td>Adds a sliding joint to each drawer, returned as a URDF with an axis and travel per drawer. The game animates these joints, the robot times its search on them and the URDF export carries them.</td><td class="mono">task 8305519</td><td><span class="pill done">In the game (dresser)</span></td></tr>
     <tr><td><b>Aholo Viewer</b> (@manycore/aholo-viewer)</td><td>Renders the room, loads the GLBs, animates drawers and doors, and handles picking.</td><td>Live site</td><td><span class="pill done">In the game</span></td></tr>
     <tr><td><b>Aholo Reality</b></td><td>Turns a 60 second iPhone walk-around of a real bedroom into a 3D Gaussian splat.</td><td>Filming guide written</td><td><span class="pill plan">Waiting for video</span></td></tr>
     <tr><td><b>Spatial Understanding</b></td><td>Reads the scan and returns a 3D box for each piece of furniture, which places the Lux3D pieces in the real room.</td><td>1,000 credits per call</td><td><span class="pill plan">Planned</span></td></tr>
   </table>
-  <p class="muted" style="margin-top:8px; font-size:11px;">The part split and articulation results are stored on Aholo's file host. Since the afternoon of 18 Nov that host has refused connections from the network the project is built on, so the files are not downloaded yet. Both task ids and result links are saved, and fetching them again costs nothing.</p>
+  <p class="muted" style="margin-top:8px; font-size:11px;">Only the dresser has been through part split and articulation so far (58 credits). The nightstand drawer, the wardrobe and the room door still use boxes with estimated limits, and the page and the URDF label them that way.</p>
   <div class="foot"><span>Stash · project report</span><span>5</span></div>
 </section>
 
@@ -179,15 +179,23 @@
     <tr><td><b>Wardrobe</b></td><td>a tall two-door wooden bedroom wardrobe, closed doors, simple modern style</td><td class="num">1.07 × 2.00 × 0.60</td><td class="num">13.3 MB</td><td class="num">0.8 MB</td><td class="mono">8275152</td></tr>
     <tr><td><b>Keys</b></td><td>a small ring of three metal house keys with a round red plastic tag</td><td class="num">n/a</td><td class="num">22.5 MB</td><td class="num">2.5 MB</td><td class="mono">8274600</td></tr>
   </table>
-  <p class="muted" style="font-size:10.5px; margin-top:4px;">Sizes are width × height × depth from aiPredictSize, not measured. Web copies were made locally with glTF-Transform (weld, simplify, 512 px JPEG textures), which cost no credits.</p>
+  <p class="muted" style="font-size:10.5px; margin-top:4px;">Sizes are width × height × depth from aiPredictSize, not measured. Web copies were made locally with glTF-Transform (weld, simplify, smaller textures), which cost no credits.</p>
   <div class="grid g3" style="margin-top:4mm; gap:6mm;">
     <div class="box"><h3>v1 · Hand-placed boxes</h3><p>The first playable room used the Lux3D pieces as fixed bodies, with plain boxes for the moving parts and joint limits I estimated by hand: drawers slide 0.32 m (nightstand 0.18 m), the wardrobe door swings 1.75 rad and the room door 1.4 rad. Every one of these is marked "estimate" in the room file, on the page and in the URDF.</p></div>
-    <div class="box"><h3>v2 · Lux3D parts and joints</h3><p>On 18 Nov the full-resolution dresser went through part split (30 credits) and the split result went through articulation (28 credits) with the prompt: "Keep the dresser body fixed. Add a sliding joint to each drawer so it pulls straight out toward the front." Both succeeded. Next, these parts and joints replace the boxes, and the joint source changes from "estimate" to "lux3d-articulation".</p></div>
+    <div class="box"><h3>v2 · Lux3D parts and joints</h3><p>The full-resolution dresser went through part split (30 credits), and the split result went through articulation (28 credits) with the prompt: "Keep the dresser body fixed. Add a sliding joint to each drawer so it pulls straight out toward the front." Articulation returned a URDF: the body, three drawer meshes and three sliding joints. They replaced the dresser's boxes in the live game on 18 Nov.</p></div>
     <div class="box"><h3>v3 · The real room</h3><p>A friend films their bedroom on an iPhone, with written consent. Reality builds the splat, the pieces are fitted to it, and a tape measure checks each drawer's travel against the joint limits. That comparison goes in a table on the site; until it exists, every limit is called an estimate.</p></div>
   </div>
   <div class="grid" style="grid-template-columns: 1.1fr 1fr; gap:7mm; margin-top:5mm; align-items:start;">
-    <figure><img src="shots/02-hide.jpg" alt="" style="height:52mm; object-fit:cover; object-position:left top;"><figcaption><b>v1 in the live game.</b> The three Lux3D pieces at their predicted sizes in the placeholder room. The drawer and door fronts you click are the estimated boxes.</figcaption></figure>
-    <div class="box"><h3>Why the sizes matter</h3><p>The robot's walking and opening times, the odds it starts from and the URDF limits are all computed in metres. Because Lux3D predicts a real-world size for each piece, the dresser, the nightstand and the wardrobe come out at believable proportions to each other and to the robot without hand scaling. A real tape measurement will check those predictions once a real room is scanned.</p></div>
+    <figure><img src="shots/13-dresser-open.jpg" alt="" style="height:48mm; object-fit:cover;"><figcaption><b>v2 in the live game.</b> The top drawer is a Lux3D part on its Lux3D joint, pulled out of the Lux3D body.</figcaption></figure>
+    <div>
+      <table>
+        <tr><th>Dresser drawer</th><th class="num">v1 estimate</th><th class="num">Lux3D articulation</th></tr>
+        <tr><td>Top</td><td class="num">0.32 m</td><td class="num">0.330 m</td></tr>
+        <tr><td>Middle</td><td class="num">0.32 m</td><td class="num">0.330 m</td></tr>
+        <tr><td>Bottom</td><td class="num">0.32 m</td><td class="num">0.326 m</td></tr>
+      </table>
+      <p class="muted" style="font-size:10.5px; margin-top:5px;">Travel along the drawer's slide axis. Both columns are model outputs or guesses, not measurements; a tape measure on a real dresser is the next check. The articulation body came back at 0.90 × 0.89 × 0.48 m, the same size Lux3D predicted for the dresser at generation. For the web, scripts/shrink-part.ts welds and simplifies the parts: body 30 MB to 2.9 MB, each drawer 8.4 MB to 0.9 MB.</p>
+    </div>
   </div>
   <div class="foot"><span>Stash · project report</span><span>6</span></div>
 </section>
@@ -208,6 +216,7 @@
         <tr><td>18 Nov 16:08</td><td>Part split and articulation run on the dresser.</td></tr>
         <tr><td>18 Nov 19:21</td><td>Simplified Chinese version of the page and the game, picked from the browser language or a toggle.</td></tr>
         <tr><td>18 Nov 19:45</td><td>Screenshots for this report showed the floor-plan labels on side-by-side drawers running together. Labels now shrink to fit and stay inside the room.</td></tr>
+        <tr><td>18 Nov 20:05</td><td>The Lux3D dresser parts and joints replace the boxes in the game. While wiring them in, the URDF export was fixed to place part geometry in the joint frame and turn Y-up meshes Z-up.</td></tr>
       </table>
     </div>
     <div>
@@ -238,17 +247,18 @@
       <p>The same joints the game animates are exported as URDF: a link for each moving part, a fixed mount for its body, and a prismatic or revolute joint with its axis and limits. Coordinates are converted from the viewer's Y-up to the Z-up that robot tools expect. Each joint carries a comment that says where its limits came from.</p>
       <pre><span class="c">&lt;!-- Demo bedroom (placeholder). Joint limits marked "estimate" were not measured. --&gt;</span>
 &lt;link name="dresser_top_part"&gt;
-  &lt;visual&gt;&lt;geometry&gt;&lt;box size="0.8 0.44 0.22"/&gt;&lt;/geometry&gt;&lt;/visual&gt;
+  &lt;visual&gt;&lt;origin xyz="0 0 0" rpy="1.5708 0 0"/&gt;
+    &lt;geometry&gt;&lt;mesh filename="rooms/demo/pieces/dresser-drawer-top.glb"/&gt;&lt;/geometry&gt;&lt;/visual&gt;
 &lt;/link&gt;
-<span class="c">&lt;!-- Dresser, top drawer: limits from estimate --&gt;</span>
+<span class="c">&lt;!-- Dresser, top drawer: limits from lux3d-articulation --&gt;</span>
 &lt;joint name="dresser_top_joint" type="prismatic"&gt;
   &lt;parent link="room_base"/&gt;
   &lt;child link="dresser_top_part"/&gt;
-  &lt;origin xyz="-0.55 1.33 0.73" rpy="0 0 0"/&gt;
+  &lt;origin xyz="-0.55 1.3285 0.7308" rpy="0 0 0"/&gt;
   &lt;axis xyz="0 -1 0"/&gt;
-  &lt;limit lower="0" upper="0.32" effort="20" velocity="1"/&gt;
+  &lt;limit lower="0" upper="0.3301" effort="20" velocity="1"/&gt;
 &lt;/joint&gt;</pre>
-      <p class="muted" style="margin-top:6px; font-size:11px;">An excerpt of the file the site downloads today: six movable joints, all marked as estimates. The renderer and the URDF are two separate outputs built from one room file; Stash does not run a physics engine.</p>
+      <p class="muted" style="margin-top:6px; font-size:11px;">An excerpt of the file the site downloads today: six movable joints, three from Lux3D articulation and three marked as estimates. The renderer and the URDF are two separate outputs built from one room file; Stash does not run a physics engine.</p>
     </div>
   </div>
   <div class="foot"><span>Stash · project report</span><span>8</span></div>
@@ -278,7 +288,7 @@
       </table>
       <p class="muted" style="font-size:10.5px; margin-top:4px;">Prices from labs.aholo.ai/pricing, read 18 Nov. The text-to-3D charge was checked against the usage page; the last two rows are from the pipeline's ledger. At least 1,200 credits stay in reserve for judging.</p>
       <div class="grid g3" style="margin-top:5mm; gap:4mm;">
-        <div><div class="stat">45</div><div class="stat-l">unit tests passing</div></div>
+        <div><div class="stat">46</div><div class="stat-l">unit tests passing</div></div>
         <div><div class="stat">12/12</div><div class="stat-l">browser tests on the live URL, desktop and phone</div></div>
         <div><div class="stat">0</div><div class="stat-l">credits spent by the judges' path</div></div>
       </div>
@@ -297,6 +307,7 @@
       <ul>
         <li>The full loop: hide, robot search with visible odds, result, share link, friend race.</li>
         <li>Four Lux3D models in an Aholo Viewer room, with a floor-plan fallback.</li>
+        <li>The dresser's three drawers are Lux3D parts on Lux3D articulation joints.</li>
         <li>URDF export of every moving part.</li>
         <li>English and Simplified Chinese.</li>
         <li>Optional live text-to-3D: type an object, then hide it in the room. Capped per day.</li>
@@ -305,7 +316,7 @@
       <h3 style="margin-top:10px">Not done yet</h3>
       <ul>
         <li>The room is a hand-placed placeholder, not a scan.</li>
-        <li>The moving parts are boxes with estimated joints. The Lux3D split and articulation results exist but are not in the game.</li>
+        <li>The nightstand drawer, the wardrobe and the room door are still boxes with estimated joints.</li>
         <li>Spatial Understanding has not been run.</li>
         <li>No outside players yet, so the Players section on the site is empty.</li>
       </ul>
@@ -313,7 +324,7 @@
     <div>
       <h3>Next, before the deadline</h3>
       <ol style="padding-left:16px; margin:0 0 10px;">
-        <li>Download the dresser parts and joints and swap them in for the boxes.</li>
+        <li>Run part split and articulation on the nightstand and the wardrobe.</li>
         <li>Scan a real bedroom with Reality from a friend's iPhone video, with their written consent, and place the furniture in it.</li>
         <li>Tape-measure drawer travel and door swing and publish them next to the estimated limits.</li>
         <li>Ask outside players to play cold, and list them, dated, only with permission.</li>
