@@ -2,7 +2,7 @@
 
 Hide something in a real room, then watch a robot search for it, one drawer or door at a time. Send the hide to a friend and see who finds it faster.
 
-Live demo: link added after the first deploy. No account needed.
+Live demo: https://stash-hide-and-seek.vercel.app (no account needed). Status: https://stash-hide-and-seek.vercel.app/api/health
 
 ## How it works
 
