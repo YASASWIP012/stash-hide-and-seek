@@ -1,0 +1,18 @@
+{
+  "kind": "lux3d.text-to-3d.turbo",
+  "taskId": "8275152",
+  "outputs": [
+    "https://qhsmodel.kujiale.com/genesis3d/inference/20261118/287cf3d20a034518b9791d08cf4a0b42/results/tex_mesh/attempt-1/tex_mesh.glb"
+  ],
+  "raw": {
+    "bizId": "LUX_3D",
+    "status": 3,
+    "outputs": [
+      {
+        "content": "https://qhsmodel.kujiale.com/genesis3d/inference/20261118/287cf3d20a034518b9791d08cf4a0b42/results/tex_mesh/attempt-1/tex_mesh.glb"
+      }
+    ],
+    "taskId": 8275152
+  },
+  "savedAt": "2026-11-18T05:21:29.333Z"
+}

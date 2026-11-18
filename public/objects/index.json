@@ -1,0 +1,42 @@
+[
+  {
+    "id": "keys",
+    "label": "Keys",
+    "file": "objects/keys.glb",
+    "taskId": "8274600",
+    "step": "lux3d.text-to-3d.turbo",
+    "input": {
+      "text": "a small ring of three metal house keys with a round red plastic tag"
+    }
+  },
+  {
+    "id": "dresser",
+    "label": "Dresser",
+    "file": "objects/dresser.glb",
+    "taskId": "8274825",
+    "step": "lux3d.text-to-3d.turbo",
+    "input": {
+      "text": "a wooden bedroom dresser with three wide drawers stacked vertically, simple modern style, plain front"
+    }
+  },
+  {
+    "id": "nightstand",
+    "label": "Nightstand",
+    "file": "objects/nightstand.glb",
+    "taskId": "8274976",
+    "step": "lux3d.text-to-3d.turbo",
+    "input": {
+      "text": "a small wooden bedside nightstand with one drawer on top and an open shelf below"
+    }
+  },
+  {
+    "id": "wardrobe",
+    "label": "Wardrobe",
+    "file": "objects/wardrobe.glb",
+    "taskId": "8275152",
+    "step": "lux3d.text-to-3d.turbo",
+    "input": {
+      "text": "a tall two-door wooden bedroom wardrobe, closed doors, simple modern style"
+    }
+  }
+]

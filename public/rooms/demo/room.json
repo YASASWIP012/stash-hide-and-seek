@@ -1,0 +1,375 @@
+{
+  "id": "demo",
+  "title": "Demo bedroom (placeholder)",
+  "owner": null,
+  "capturedOn": null,
+  "status": "placeholder",
+  "floor": [
+    [
+      -1.8,
+      -1.6
+    ],
+    [
+      1.8,
+      -1.6
+    ],
+    [
+      1.8,
+      1.6
+    ],
+    [
+      -1.8,
+      1.6
+    ]
+  ],
+  "spawn": [
+    0.3,
+    1.1
+  ],
+  "fixtures": [
+    {
+      "id": "dresser",
+      "label": "Dresser",
+      "box": {
+        "center": [
+          -0.55,
+          0.4469,
+          -1.36
+        ],
+        "size": [
+          0.9,
+          0.894,
+          0.48
+        ],
+        "yaw": 0
+      },
+      "mesh": "objects/dresser.glb"
+    },
+    {
+      "id": "nightstand",
+      "label": "Nightstand",
+      "box": {
+        "center": [
+          1.15,
+          0.3,
+          -1.45
+        ],
+        "size": [
+          0.472,
+          0.6,
+          0.294
+        ],
+        "yaw": 0
+      },
+      "mesh": "objects/nightstand.glb"
+    },
+    {
+      "id": "wardrobe",
+      "label": "Wardrobe",
+      "box": {
+        "center": [
+          -1.5,
+          1.0,
+          0.55
+        ],
+        "size": [
+          1.067,
+          2.0,
+          0.6
+        ],
+        "yaw": 1.5707963267948966
+      },
+      "mesh": "objects/wardrobe.glb"
+    }
+  ],
+  "containers": [
+    {
+      "id": "dresser-top",
+      "label": "Dresser, top drawer",
+      "kind": "drawer",
+      "box": {
+        "center": [
+          -0.55,
+          0.73,
+          -1.33
+        ],
+        "size": [
+          0.8,
+          0.22,
+          0.44
+        ],
+        "yaw": 0
+      },
+      "joint": {
+        "type": "prismatic",
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "origin": [
+          -0.55,
+          0.73,
+          -1.33
+        ],
+        "lower": 0,
+        "upper": 0.32,
+        "source": "estimate"
+      },
+      "approach": [
+        -0.55,
+        -0.58
+      ]
+    },
+    {
+      "id": "dresser-middle",
+      "label": "Dresser, middle drawer",
+      "kind": "drawer",
+      "box": {
+        "center": [
+          -0.55,
+          0.45,
+          -1.33
+        ],
+        "size": [
+          0.8,
+          0.24,
+          0.44
+        ],
+        "yaw": 0
+      },
+      "joint": {
+        "type": "prismatic",
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "origin": [
+          -0.55,
+          0.45,
+          -1.33
+        ],
+        "lower": 0,
+        "upper": 0.32,
+        "source": "estimate"
+      },
+      "approach": [
+        -0.55,
+        -0.58
+      ]
+    },
+    {
+      "id": "dresser-bottom",
+      "label": "Dresser, bottom drawer",
+      "kind": "drawer",
+      "box": {
+        "center": [
+          -0.55,
+          0.17,
+          -1.33
+        ],
+        "size": [
+          0.8,
+          0.24,
+          0.44
+        ],
+        "yaw": 0
+      },
+      "joint": {
+        "type": "prismatic",
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "origin": [
+          -0.55,
+          0.17,
+          -1.33
+        ],
+        "lower": 0,
+        "upper": 0.32,
+        "source": "estimate"
+      },
+      "approach": [
+        -0.55,
+        -0.58
+      ]
+    },
+    {
+      "id": "nightstand-drawer",
+      "label": "Nightstand drawer",
+      "kind": "drawer",
+      "box": {
+        "center": [
+          1.15,
+          0.5,
+          -1.43
+        ],
+        "size": [
+          0.4,
+          0.14,
+          0.26
+        ],
+        "yaw": 0
+      },
+      "joint": {
+        "type": "prismatic",
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "origin": [
+          1.15,
+          0.5,
+          -1.43
+        ],
+        "lower": 0,
+        "upper": 0.18,
+        "source": "estimate"
+      },
+      "approach": [
+        1.15,
+        -0.68
+      ]
+    },
+    {
+      "id": "wardrobe",
+      "label": "Wardrobe",
+      "kind": "wardrobe",
+      "box": {
+        "center": [
+          -1.5,
+          1.0,
+          0.55
+        ],
+        "size": [
+          1.0,
+          1.9,
+          0.56
+        ],
+        "yaw": 1.5707963267948966
+      },
+      "part": {
+        "center": [
+          -1.19,
+          1.0,
+          0.55
+        ],
+        "size": [
+          1.0,
+          1.9,
+          0.03
+        ],
+        "yaw": 1.5707963267948966
+      },
+      "joint": {
+        "type": "revolute",
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "origin": [
+          -1.19,
+          1.0,
+          1.05
+        ],
+        "lower": 0,
+        "upper": 1.75,
+        "source": "estimate"
+      },
+      "approach": [
+        -0.55,
+        0.3
+      ]
+    },
+    {
+      "id": "room-door",
+      "label": "Behind the room door",
+      "kind": "door",
+      "box": {
+        "center": [
+          1.72,
+          1.0,
+          0.6
+        ],
+        "size": [
+          0.85,
+          2.0,
+          0.12
+        ],
+        "yaw": 1.5707963267948966
+      },
+      "part": {
+        "center": [
+          1.76,
+          1.0,
+          0.6
+        ],
+        "size": [
+          0.85,
+          2.0,
+          0.04
+        ],
+        "yaw": 1.5707963267948966
+      },
+      "joint": {
+        "type": "revolute",
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "origin": [
+          1.76,
+          1.0,
+          0.175
+        ],
+        "lower": 0,
+        "upper": -1.4,
+        "source": "estimate"
+      },
+      "approach": [
+        1.0,
+        0.6
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "step": "lux3d.text-to-3d.turbo",
+      "taskId": "8274600",
+      "credits": 1,
+      "date": "2026-11-18",
+      "artifact": "objects/keys.glb",
+      "note": "Lux3D Turbo text-to-3D, size by aiPredictSize: a small ring of three metal house keys with a round red plastic tag"
+    },
+    {
+      "step": "lux3d.text-to-3d.turbo",
+      "taskId": "8274825",
+      "credits": 1,
+      "date": "2026-11-18",
+      "artifact": "objects/dresser.glb",
+      "note": "Lux3D Turbo text-to-3D, size by aiPredictSize: a wooden bedroom dresser with three wide drawers stacked vertically, simple modern style, plain front"
+    },
+    {
+      "step": "lux3d.text-to-3d.turbo",
+      "taskId": "8274976",
+      "credits": 1,
+      "date": "2026-11-18",
+      "artifact": "objects/nightstand.glb",
+      "note": "Lux3D Turbo text-to-3D, size by aiPredictSize: a small wooden bedside nightstand with one drawer on top and an open shelf below"
+    },
+    {
+      "step": "lux3d.text-to-3d.turbo",
+      "taskId": "8275152",
+      "credits": 1,
+      "date": "2026-11-18",
+      "artifact": "objects/wardrobe.glb",
+      "note": "Lux3D Turbo text-to-3D, size by aiPredictSize: a tall two-door wooden bedroom wardrobe, closed doors, simple modern style"
+    }
+  ]
+}

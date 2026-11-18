@@ -1,0 +1,16 @@
+{
+  "kind": "lux3d.text-to-3d.turbo",
+  "taskId": "8274600",
+  "request": {
+    "path": "/global/lux3d/v1/generate/text-to-3d/task/create",
+    "body": {
+      "prompt": "a small ring of three metal house keys with a round red plastic tag",
+      "version": "G1-Turbo",
+      "outputFormat": [
+        "glb"
+      ],
+      "aiPredictSize": true
+    }
+  },
+  "at": "2026-11-18T05:11:05.347Z"
+}

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en" data-mood="cobalt" data-accent="cobalt" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stash: out-hide a robot in a real room</title>
+  <meta name="description" content="Hide something in a real room, then watch a robot search for it, drawer by drawer. Furniture made with Lux3D; joints from part split and articulation.">
+  <meta property="og:title" content="Stash: out-hide a robot in a real room">
+  <meta property="og:description" content="Hide something. A robot opens drawers to find it. Send the hide to a friend and see who is faster.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400..600&family=Public+Sans:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__bar">
+      <a class="nav__brand" href="#top">
+        <span class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M10 8h4M10 16h4"/></svg></span>
+        Stash
+      </a>
+      <nav class="nav__links" aria-label="Sections">
+        <a href="#play">Play</a>
+        <a href="#how">How it is made</a>
+        <a href="#export">Robot export</a>
+        <a href="#faq">What is real</a>
+      </nav>
+      <a class="btn btn-ink btn-sm" href="#play">Play now</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container">
+        <span class="badge badge--dot">Made with Aholo Lux3D</span>
+        <h1>Hide it in a real room. <span class="t-muted">Then out-hide the robot.</span></h1>
+        <p class="lead">Pick something, tuck it in a drawer, and a robot comes looking. It opens one drawer or door at a time and shows how sure it is about each spot. Send the hide to a friend and see who finds it faster.</p>
+        <div class="cta-row">
+          <a class="btn btn-candy btn-lg" href="#play">Play the demo room</a>
+          <a class="btn btn-outline btn-lg" href="#how">See how it is made</a>
+        </div>
+        <div class="trust"><span>No account</span><span>Runs in the browser</span><span>Replays saved Lux3D results, so it never waits on a server</span></div>
+        <p class="room-note" id="room-status"></p>
+      </div>
+    </section>
+
+    <section id="play" class="section" style="padding-top:32px">
+      <div class="container">
+        <div class="window window--dark">
+          <div class="window__bar"><div class="lights" aria-hidden="true"><i></i><i></i><i></i></div><span class="window__title">Stash · demo bedroom</span></div>
+          <div class="game">
+            <div class="game__stage" id="stage" aria-label="The room. Drag to look around, click a drawer or door to use it.">
+              <div class="game__hud"><span class="hud-pill t-mono" id="clock">0.0 s</span><span class="hud-pill" id="renderer">Loading</span></div>
+              <div class="say" id="say" aria-live="polite"></div>
+            </div>
+            <aside class="game__panel">
+              <div>
+                <h3>What to do</h3>
+                <p id="instructions">Loading the room.</p>
+              </div>
+              <div>
+                <h3>Object to hide</h3>
+                <div class="chips" id="objects"></div>
+              </div>
+              <div>
+                <h3>Robot's odds</h3>
+                <ol class="odds" id="odds" aria-live="off"></ol>
+                <p class="meta-line">Odds come from container size and type, nudged by where people have hidden things in this room.</p>
+              </div>
+              <div class="result" id="result" hidden>
+                <p class="t-title" id="result-title"></p>
+                <p class="t-small" id="result-body"></p>
+                <div class="share">
+                  <input id="share-url" readonly aria-label="Link to this hide">
+                  <button class="btn btn-candy btn-sm" id="copy" type="button">Copy link</button>
+                </div>
+                <button class="btn btn-ghost btn-sm" id="again" type="button" style="margin-top:10px">Hide again</button>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="section section--alt">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span>How it is made</span>
+          <h2>Every piece of furniture is a 3D model. <span class="t-muted">The drawers move on joints.</span></h2>
+          <p class="lead">A flat picture cannot be opened. Stash needs real 3D geometry, split into parts, with a joint on each moving part. That is the job Lux3D does here.</p>
+        </div>
+        <div class="grid grid-3">
+          <div class="tile reveal" style="--i:0"><div><span class="status status--next">Next: first real scan</span><p class="t-title">1. Phone video to 3D room</p><p>A 60 second iPhone video goes to Aholo Reality, which returns a Gaussian splat of the room.</p></div></div>
+          <div class="tile reveal" style="--i:1"><div><span class="status status--next">Planned</span><p class="t-title">2. Find the furniture</p><p>Spatial Understanding reads the scan and returns walls, doors and a 3D box for each piece of furniture.</p></div></div>
+          <div class="tile reveal" style="--i:2"><div><span class="status status--done">Running now</span><p class="t-title">3. Lux3D makes each piece</p><p>Lux3D generates each piece as a textured model at real size, using its own size prediction.</p></div></div>
+          <div class="tile reveal" style="--i:3"><div><span class="status status--next">Next</span><p class="t-title">4. Split into parts</p><p>Lux3D part split separates the drawer fronts and doors from the body.</p></div></div>
+          <div class="tile reveal" style="--i:4"><div><span class="status status--next">Next</span><p class="t-title">5. Add joints</p><p>Lux3D articulation turns each part into a sliding or swinging joint the game and the robot both use.</p></div></div>
+          <div class="tile reveal" style="--i:5"><div><span class="status status--done">Running now</span><p class="t-title">6. Hide, search, share</p><p>The robot plans its search on those joints. The same joints export to URDF for robot simulators.</p></div></div>
+        </div>
+        <h3 class="t-title" style="margin:48px 0 14px">Saved results this room replays</h3>
+        <ol class="prov-list" id="provenance"></ol>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container try">
+        <div class="card">
+          <span class="eyebrow"><span class="dot"></span>Try a live generation</span>
+          <h3 class="t-title" style="margin-top:12px">Hide your own object</h3>
+          <p class="t-small" style="margin-top:6px">Type something small. Lux3D turns the words into a 3D model, and it appears in the object list above. There is a daily limit; if it is reached, the ready-made objects still work.</p>
+          <form class="make" id="make-form">
+            <input id="make-input" maxlength="80" placeholder="a blue USB stick" aria-label="Object to generate" autocomplete="off">
+            <button class="btn btn-candy" id="make-btn" type="submit">Generate</button>
+          </form>
+          <p class="t-small" id="make-status" aria-live="polite"></p>
+        </div>
+        <div class="card" id="export">
+          <span class="eyebrow"><span class="dot"></span>Robot export</span>
+          <h3 class="t-title" style="margin-top:12px">Take the room into a robot simulator</h3>
+          <p class="t-small" style="margin-top:6px">Download the room as URDF: one link per moving part, with its joint type, axis and limits. Limits that were estimated rather than measured say so in the file.</p>
+          <button class="btn btn-outline" id="urdf-btn" type="button" style="margin-top:16px">Download URDF</button>
+          <p class="t-small" id="urdf-note" style="margin-top:10px"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="section section--alt">
+      <div class="container">
+        <div class="section-head"><h2>What is real, and what is not yet.</h2></div>
+        <div class="faq">
+          <details open><summary>Is this a real room?</summary><p>Not yet. The demo room is a placeholder laid out by hand. The furniture in it is real Lux3D output, generated from text, with sizes from Lux3D's size prediction. The first room scanned from a phone video replaces it.</p></details>
+          <details><summary>Do the drawers really move?</summary><p>They move on joints with a type, an axis and limits. In the placeholder room the moving parts are boxes and the limits are estimates. Part split and articulation replace both with Lux3D output.</p></details>
+          <details><summary>Is the robot an AI?</summary><p>It is a simulated robot with a stated search rule: open the spot with the best chance per second of effort, then rule it out. Its odds start from container size and type and shift with logged hides. It does not learn beyond that.</p></details>
+          <details><summary>Does playing cost anything?</summary><p>No. The game replays saved results. Only the optional live generation calls the API, with a daily cap.</p></details>
+          <details><summary>What happens to my hides?</summary><p>They stay in your browser, where they nudge the robot's odds for you. Nothing is sent to a server.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <span>Stash. Built for the Manycore Aholo Global 3D AI Hackathon.</span>
+      <span><a href="/api/health">Status</a></span>
+    </div>
+  </footer>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "startingBalance": 3600,
+  "entries": [
+    {
+      "at": "2026-11-18T05:13:25.035Z",
+      "kind": "lux3d.text-to-3d.turbo",
+      "taskId": "8274600",
+      "credits": 1,
+      "request": "{\"body\":{\"aiPredictSize\":true,\"outputFormat\":[\"glb\"],\"prompt\":\"a small ring of three metal house keys with a round red plastic tag\",\"version\":\"G1-Turbo\"},\"path\":\"/global/lux3d/v1/generate/text-to-3d/task/create\"}"
+    },
+    {
+      "at": "2026-11-18T05:16:59.655Z",
+      "kind": "lux3d.text-to-3d.turbo",
+      "taskId": "8274825",
+      "credits": 1,
+      "request": "{\"body\":{\"aiPredictSize\":true,\"outputFormat\":[\"glb\"],\"prompt\":\"a wooden bedroom dresser with three wide drawers stacked vertically, simple modern style, plain front\",\"version\":\"G1-Turbo\"},\"path\":\"/global/lux3d/v1/generate/text-to-3d/task/create\"}"
+    },
+    {
+      "at": "2026-11-18T05:19:22.215Z",
+      "kind": "lux3d.text-to-3d.turbo",
+      "taskId": "8274976",
+      "credits": 1,
+      "request": "{\"body\":{\"aiPredictSize\":true,\"outputFormat\":[\"glb\"],\"prompt\":\"a small wooden bedside nightstand with one drawer on top and an open shelf below\",\"version\":\"G1-Turbo\"},\"path\":\"/global/lux3d/v1/generate/text-to-3d/task/create\"}"
+    },
+    {
+      "at": "2026-11-18T05:21:29.337Z",
+      "kind": "lux3d.text-to-3d.turbo",
+      "taskId": "8275152",
+      "credits": 1,
+      "request": "{\"body\":{\"aiPredictSize\":true,\"outputFormat\":[\"glb\"],\"prompt\":\"a tall two-door wooden bedroom wardrobe, closed doors, simple modern style\",\"version\":\"G1-Turbo\"},\"path\":\"/global/lux3d/v1/generate/text-to-3d/task/create\"}"
+    }
+  ]
+}

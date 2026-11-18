@@ -1,0 +1,16 @@
+{
+  "kind": "lux3d.text-to-3d.turbo",
+  "taskId": "8275152",
+  "request": {
+    "path": "/global/lux3d/v1/generate/text-to-3d/task/create",
+    "body": {
+      "prompt": "a tall two-door wooden bedroom wardrobe, closed doors, simple modern style",
+      "version": "G1-Turbo",
+      "outputFormat": [
+        "glb"
+      ],
+      "aiPredictSize": true
+    }
+  },
+  "at": "2026-11-18T05:19:32.469Z"
+}

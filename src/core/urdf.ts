@@ -1,0 +1,58 @@
+import type { Container, RoomManifest } from './types.ts';
+
+const f = (n: number) => Number(n.toFixed(4)).toString();
+const v = (a: readonly number[]) => a.map(f).join(' ');
+const esc = (s: string) => s.replace(/[<>&"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+/**
+ * Export the room as URDF: a fixed base link, one fixed body per container and one moving
+ * part per container joined by the joint Lux3D articulation produced (or an estimate, flagged).
+ * Collision geometry is the container box. URDF is Z-up, so Y-up coordinates are rotated.
+ */
+export function roomToUrdf(room: RoomManifest): string {
+  const toZup = ([x, y, z]: readonly number[]) => [x ?? 0, -(z ?? 0), y ?? 0];
+  const lines: string[] = [];
+  lines.push('<?xml version="1.0"?>');
+  lines.push(`<robot name="${esc(room.id)}">`);
+  lines.push(`  <!-- ${esc(room.title)}. Joint limits marked "estimate" were not measured. -->`);
+  lines.push('  <link name="room_base"/>');
+
+  for (const c of room.containers) lines.push(...containerXml(c, toZup));
+
+  lines.push('</robot>');
+  return lines.join('\n');
+}
+
+function containerXml(c: Container, toZup: (a: readonly number[]) => number[]): string[] {
+  const id = c.id.replace(/[^a-zA-Z0-9_]/g, '_');
+  const [w, h, d] = c.box.size;
+  const size = v([w, d, h]);
+  const center = v(toZup(c.box.center));
+  const origin = v(toZup(c.joint.origin));
+  const axis = v(toZup(c.joint.axis));
+  const visual = c.mesh
+    ? `<geometry><mesh filename="${esc(c.mesh)}"/></geometry>`
+    : `<geometry><box size="${size}"/></geometry>`;
+  return [
+    `  <link name="${id}_body">`,
+    `    <collision><geometry><box size="${size}"/></geometry></collision>`,
+    '  </link>',
+    `  <joint name="${id}_mount" type="fixed">`,
+    '    <parent link="room_base"/>',
+    `    <child link="${id}_body"/>`,
+    `    <origin xyz="${center}" rpy="0 0 ${f(c.box.yaw)}"/>`,
+    '  </joint>',
+    `  <link name="${id}_part">`,
+    `    <visual>${visual}</visual>`,
+    `    <collision><geometry><box size="${size}"/></geometry></collision>`,
+    '  </link>',
+    `  <!-- ${esc(c.label)}: limits from ${c.joint.source}${c.joint.measured !== undefined ? `, tape-measured travel ${f(c.joint.measured)}` : ''} -->`,
+    `  <joint name="${id}_joint" type="${c.joint.type}">`,
+    `    <parent link="room_base"/>`,
+    `    <child link="${id}_part"/>`,
+    `    <origin xyz="${origin}" rpy="0 0 ${f(c.box.yaw)}"/>`,
+    `    <axis xyz="${axis}"/>`,
+    `    <limit lower="${f(c.joint.lower)}" upper="${f(c.joint.upper)}" effort="20" velocity="1"/>`,
+    '  </joint>',
+  ];
+}
