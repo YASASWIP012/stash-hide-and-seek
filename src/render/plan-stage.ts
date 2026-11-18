@@ -20,6 +20,29 @@ function rect(b: Box, cls: string) {
   return r;
 }
 
+const LABEL_SIZE = 11;
+
+/** Rough rendered width of a label in viewBox units: CJK glyphs are about square, Latin about 0.58 em. */
+export function labelWidth(text: string, size = LABEL_SIZE): number {
+  let w = 0;
+  for (const ch of text) w += /[\u3000-\u9fff\uff00-\uffef]/.test(ch) ? size : size * 0.58;
+  return w;
+}
+
+/** Shrink a label to fit a footprint (down to 7 units) and slide it so it stays inside [lo, hi]. */
+export function fitLabel(text: string, width: number, x: number, lo: number, hi: number): { size: number; x: number } {
+  const full = labelWidth(text);
+  const size = full > width - 4 ? Math.max(7, (LABEL_SIZE * (width - 4)) / full) : LABEL_SIZE;
+  const half = labelWidth(text, size) / 2;
+  return { size, x: Math.min(Math.max(x, lo + half + 2), hi - half - 2) };
+}
+
+/** Width of a footprint as drawn on the plan (x extent after yaw). */
+function footprintWidth(b: { size: [number, number, number]; yaw: number }): number {
+  const c = Math.abs(Math.cos(b.yaw)), s = Math.abs(Math.sin(b.yaw));
+  return b.size[0] * c + b.size[2] * s;
+}
+
 /** Words the floor plan shows or reads out, so it can be localised. */
 export interface PlanText {
   aria: string;
@@ -45,7 +68,7 @@ export class PlanStage implements Stage {
     text: PlanText = {
       aria: 'Floor plan of the room. Click a container to open it.',
       open: (label) => `Open ${label}`,
-      short: (label) => label.replace(/^Dresser, /, '').replace(/ drawer$/, ''),
+      short: (label) => label.replace(/^Dresser, /, '').replace(/ drawer$/, '').replace(/^Behind the room door$/, 'Door'),
     },
   ) {
     this.text = text;
@@ -88,8 +111,11 @@ export class PlanStage implements Stage {
       });
       const t = document.createElementNS(NS, 'text');
       t.textContent = this.text.short(c.label);
-      t.setAttribute('x', String(fb.center[0] * S));
-      t.setAttribute('y', String(fb.center[2] * S + 4));
+      // Fit the label to its footprint and keep it inside the room, so side-by-side drawers stay readable.
+      const fit = fitLabel(t.textContent, footprintWidth(fb) * S, fb.center[0] * S, (Math.min(...xs) - pad) * S, (Math.max(...xs) + pad) * S);
+      t.setAttribute('x', String(fit.x));
+      t.setAttribute('y', String(fb.center[2] * S + fit.size / 3));
+      t.style.fontSize = `${fit.size}px`;
       t.setAttribute('class', 'plan__label');
       this.svg.append(r, t);
       this.parts.set(c.id, { el: r, label: t });

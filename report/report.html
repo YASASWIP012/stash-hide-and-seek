@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stash: project report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400..600&family=Public+Sans:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  :root {
+    --ink: #0e1116; --ink-2: #3f4552; --ink-3: #5c6372; --line: #e4e6ee; --wash: #f4f6fc;
+    --accent: #2f45ff; --done: #1f7a3d; --next: #9a5b00; --plan: #5c6372;
+    --sans: "Public Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+    --display: "Outfit", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; color: var(--ink); font: 400 12.5px/1.55 var(--sans); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 297mm; height: 210mm; padding: 14mm 16mm 12mm; position: relative; overflow: hidden; page-break-after: always; display: flex; flex-direction: column; }
+  .page:last-child { page-break-after: auto; }
+  .foot { position: absolute; left: 16mm; right: 16mm; bottom: 7mm; display: flex; justify-content: space-between; font-size: 9.5px; color: var(--ink-3); }
+  h1, h2, h3 { font-family: var(--display); font-weight: 500; margin: 0; letter-spacing: -0.02em; }
+  h1 { font-size: 64px; line-height: 1; }
+  h2 { font-size: 26px; line-height: 1.15; margin-bottom: 4px; }
+  h3 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 4px; }
+  p { margin: 0 0 8px; }
+  .eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .lead { font-size: 14.5px; color: var(--ink-2); max-width: 190mm; }
+  .muted { color: var(--ink-3); }
+  .mono { font-family: var(--mono); font-size: 0.92em; font-variant-ligatures: none; font-feature-settings: "calt" 0, "liga" 0; }
+  .grid { display: grid; gap: 7mm; }
+  .g2 { grid-template-columns: 1fr 1fr; }
+  .g3 { grid-template-columns: 1fr 1fr 1fr; }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  figure { margin: 0; }
+  figure img { width: 100%; display: block; border-radius: 6px; border: 1px solid var(--line); }
+  figcaption { font-size: 10.5px; color: var(--ink-3); margin-top: 4px; line-height: 1.4; }
+  figcaption b { color: var(--ink); font-weight: 600; }
+  table { border-collapse: collapse; width: 100%; font-size: 11px; }
+  th { text-align: left; font-weight: 600; color: var(--ink-3); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--ink); padding: 4px 6px; }
+  td { border-bottom: 1px solid var(--line); padding: 5px 6px; vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pill { display: inline-block; font-size: 9.5px; font-weight: 600; padding: 1px 7px; border-radius: 99px; white-space: nowrap; }
+  .pill.done { background: #e3f3e8; color: var(--done); }
+  .pill.ran { background: #fff1db; color: var(--next); }
+  .pill.plan { background: #eceef3; color: var(--plan); }
+  .box { background: var(--wash); border-radius: 8px; padding: 9px 12px; }
+  .box p:last-child { margin: 0; }
+  pre { font-variant-ligatures: none; font-feature-settings: "calt" 0, "liga" 0; font: 9.6px/1.45 Menlo, ui-monospace, monospace; background: #0e1116; color: #dfe4f2; padding: 10px 12px; border-radius: 8px; margin: 0; white-space: pre; overflow: hidden; }
+  pre .c { color: #8e98b4; }
+  ul { margin: 0 0 8px; padding-left: 16px; } li { margin-bottom: 3px; }
+  .stat { font-family: var(--display); font-size: 30px; font-weight: 500; line-height: 1; }
+  .stat-l { font-size: 10.5px; color: var(--ink-3); margin-top: 3px; }
+  .zh { font-size: 13px; line-height: 1.75; }
+  .zh h2 { letter-spacing: 0; }
+  .cover { background: linear-gradient(160deg, #3d5bf0, #1e2fa8); color: #fff; }
+  .cover .lead { color: rgba(255,255,255,0.85); }
+  .cover .eyebrow { color: rgba(255,255,255,0.8); }
+  .cover .foot { color: rgba(255,255,255,0.7); }
+  .cover figure img { border: 0; box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6); }
+  .links td { border-color: rgba(255,255,255,0.18); color: #fff; padding: 4px 8px 4px 0; }
+  .links td:first-child { color: rgba(255,255,255,0.7); width: 30mm; }
+</style>
+</head>
+<body>
+
+<!-- 1. Cover -->
+<section class="page cover">
+  <div class="grid" style="grid-template-columns: 1fr 1.25fr; align-items: center; flex: 1;">
+    <div>
+      <div class="eyebrow">Manycore Aholo Global 3D AI Hackathon · Project report</div>
+      <h1>Stash</h1>
+      <p class="lead" style="font-size:19px; margin-top:12px; font-family: var(--display);">Out-hide a robot in a real room.</p>
+      <p class="lead">You hide something in a drawer, and a simulated robot searches for it, opening one drawer or door at a time and showing its odds for each spot. Then you send the hide to a friend and see who finds it faster. The furniture is generated with Lux3D, and the drawers and doors move on joints that also export to URDF.</p>
+      <table class="links" style="margin-top:14px; width:auto;">
+        <tr><td>Play</td><td class="mono">stash-hide-and-seek.vercel.app</td></tr>
+        <tr><td>Chinese</td><td class="mono">stash-hide-and-seek.vercel.app/?lang=zh</td></tr>
+        <tr><td>Code</td><td class="mono">github.com/YASASWIP012/stash-hide-and-seek</td></tr>
+        <tr><td>Tracks</td><td>Gaming, Embodied AI</td></tr>
+        <tr><td>Team</td><td>yasaswi (solo)</td></tr>
+      </table>
+    </div>
+    <figure><img src="shots/05-robot-late.jpg" alt="The robot finds the keys in the nightstand drawer"></figure>
+  </div>
+  <div class="foot"><span>No account needed. The game replays saved Lux3D results, so it runs the same for every judge.</span><span>State as of 18 Nov 2026</span></div>
+</section>
+
+<!-- 2. Chinese summary -->
+<section class="page zh" lang="zh-CN">
+  <div class="eyebrow">中文摘要</div>
+  <h2>Stash：把东西藏进房间，看机器人能不能找到</h2>
+  <div class="grid g2" style="margin-top:8px; flex:1;">
+    <div>
+      <h3>玩法</h3>
+      <p>选一件物品，藏进抽屉、衣柜或房门后面。一个模拟机器人随后进房搜索：它一次打开一个位置，并实时显示它对每个位置的判断概率。找到后，可以把这次藏法用链接发给朋友，比比谁找得更快。整个流程无需注册，在浏览器里就能玩，有中英文两种界面。</p>
+      <h3>Aholo 工具的作用</h3>
+      <ul>
+        <li><b>Lux3D 文生 3D</b>：房间里的斗柜、床头柜、衣柜和钥匙都由 Lux3D 生成（4 个任务，任务号见第 6 页），尺寸来自 Lux3D 的尺寸预测（aiPredictSize）。</li>
+        <li><b>Lux3D 部件拆分和关节生成</b>：已对斗柜运行成功（任务 8305408 和 8305519）。结果文件还没有下载进游戏，所以目前的抽屉仍是按估计尺寸做的方块，页面上也这样标注。</li>
+        <li><b>Aholo Viewer</b>：负责 3D 渲染和交互。WebGL 不可用时，自动退回到同样能玩的平面图。</li>
+        <li><b>Aholo Reality 和空间理解</b>：计划用于把真实卧室的手机视频重建成 3D 房间并识别家具，正在等待第一段房间视频。</li>
+      </ul>
+    </div>
+    <div>
+      <h3>机器人</h3>
+      <p>机器人不是学出来的策略，而是规则公开的模拟智能体：每一步打开“概率除以所需时间”最高的位置，没找到就排除。初始概率由家具体积和类型决定，再用玩家记录过的藏法做贝叶斯更新。同一套关节可以导出为 URDF，供机器人仿真器使用。</p>
+      <h3>现在的状态（2026 年 11 月 18 日）</h3>
+      <ul>
+        <li>网站已上线，代码公开。45 个单元测试和 12 个线上浏览器测试全部通过，CI 正常。</li>
+        <li>示例房间是手工布置的占位房间，关节限位是估计值。真实房间扫描和外部玩家记录都还没有。</li>
+        <li>评委路径只回放已保存的结果，不消耗积分，也不依赖实时 API。实时生成是可选功能，每天最多 3 次。</li>
+      </ul>
+      <figure style="margin-top:8px"><img src="shots/09-zh-robot.jpg" alt="中文界面下的机器人搜索"><figcaption>中文界面：机器人在床头柜抽屉里找到了钥匙。右侧是它对每个位置的概率判断和本局结果。</figcaption></figure>
+    </div>
+  </div>
+  <div class="foot"><span>Stash · 项目报告</span><span>2</span></div>
+</section>
+
+<!-- 3. One round -->
+<section class="page">
+  <div class="eyebrow">The game</div>
+  <h2>One round, as a judge plays it</h2>
+  <p class="lead">Screenshots from the live site, taken in a desktop browser on 18 Nov. This round ended at 9.9 s on the game clock.</p>
+  <div class="grid g2" style="gap:5mm 7mm; margin:4px auto 0; width:86%;">
+    <figure><img src="shots/02-hide.jpg" alt=""><figcaption><b>1. Hide.</b> Pick an object and click a drawer, the wardrobe or the door. The room is drawn by Aholo Viewer; drag to look around.</figcaption></figure>
+    <figure><img src="shots/04-robot-early.jpg" alt=""><figcaption><b>2. The robot searches.</b> It walks to the spot it rates best per second of effort and opens it. The panel shows its odds for every spot, and the bubble says what it is doing.</figcaption></figure>
+    <figure><img src="shots/05-robot-late.jpg" alt=""><figcaption><b>3. Found.</b> Each miss rules a spot out and the odds shift. Here it found the keys in the nightstand drawer at 9.9 s.</figcaption></figure>
+    <figure><img src="shots/06-result.jpg" alt=""><figcaption><b>4. Share.</b> The result card gives a link that carries the hide and the robot's time.</figcaption></figure>
+  </div>
+  <div class="foot"><span>Stash · project report</span><span>3</span></div>
+</section>
+
+<!-- 4. Friend race + fallback -->
+<section class="page">
+  <div class="eyebrow">The game</div>
+  <h2>A friend races the robot on the same hide</h2>
+  <p class="lead">Opening the link starts a timed search in the same room. The hide lives in the link, so nothing is stored on a server and links work in either language.</p>
+  <div class="grid g2" style="margin-top:4px;">
+    <figure><img src="shots/07-seek.jpg" alt=""><figcaption><b>The friend's view.</b> The clock starts at once and the bubble shows the time to beat.</figcaption></figure>
+    <figure><img src="shots/08-seek-done.jpg" alt=""><figcaption><b>Beat the robot.</b> This was a scripted test run (one wrong drawer, then the right one), not a real player. Real players will be listed on the site's Players section only with their permission.</figcaption></figure>
+  </div>
+  <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top:4mm; align-items:start;">
+    <figure><img src="shots/10-plan.jpg" alt="" style="height:58mm; object-fit:cover; object-position:top;"><figcaption><b>Fallback.</b> Without WebGL, or if a model fails to load, the room becomes a 2D floor plan that plays the same way, by mouse or keyboard.</figcaption></figure>
+    <div class="box">
+      <h3>Why it is a game first</h3>
+      <p>There is one verb, open. Because the robot shows its odds, you can read its search and try to beat it by hiding where it rates you least likely. The share link adds a second player on the same hide, and the result is two times side by side: yours and the robot's.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Stash · project report</span><span>4</span></div>
+</section>
+
+<!-- 5. Aholo tools -->
+<section class="page">
+  <div class="eyebrow">Use of Manycore tools</div>
+  <h2>What each Aholo tool does in Stash</h2>
+  <p class="lead">A drawer in a flat image cannot be opened. The game needs real 3D geometry, split into parts, with a joint on each moving part. The table says which steps are in the live game today and which have run but are not wired in yet.</p>
+  <table style="margin-top:6px;">
+    <tr><th style="width:24%">Tool</th><th>Role in Stash</th><th style="width:22%">Evidence</th><th style="width:13%">Status</th></tr>
+    <tr><td><b>Lux3D text-to-3D</b> (G1-Turbo)</td><td>Generates the dresser, nightstand, wardrobe and the keys you hide, as textured GLB models.</td><td class="mono">tasks 8274600, 8274825, 8274976, 8275152</td><td><span class="pill done">In the game</span></td></tr>
+    <tr><td><b>Lux3D size prediction</b> (aiPredictSize)</td><td>Gives each piece a real-world size, so the drawers and the robot share one metric scale.</td><td>Sizes on page 6</td><td><span class="pill done">In the game</span></td></tr>
+    <tr><td><b>Lux3D part split</b></td><td>Separates the drawer fronts from the dresser body, so each drawer can move on its own.</td><td class="mono">task 8305408, succeeded</td><td><span class="pill ran">Ran; not wired in</span></td></tr>
+    <tr><td><b>Lux3D articulation</b></td><td>Adds a sliding joint to each drawer. These joints replace the estimated ones, and the robot and the URDF export read the same joints.</td><td class="mono">task 8305519, succeeded</td><td><span class="pill ran">Ran; not wired in</span></td></tr>
+    <tr><td><b>Aholo Viewer</b> (@manycore/aholo-viewer)</td><td>Renders the room, loads the GLBs, animates drawers and doors, and handles picking.</td><td>Live site</td><td><span class="pill done">In the game</span></td></tr>
+    <tr><td><b>Aholo Reality</b></td><td>Turns a 60 second iPhone walk-around of a real bedroom into a 3D Gaussian splat.</td><td>Filming guide written</td><td><span class="pill plan">Waiting for video</span></td></tr>
+    <tr><td><b>Spatial Understanding</b></td><td>Reads the scan and returns a 3D box for each piece of furniture, which places the Lux3D pieces in the real room.</td><td>1,000 credits per call</td><td><span class="pill plan">Planned</span></td></tr>
+  </table>
+  <p class="muted" style="margin-top:8px; font-size:11px;">The part split and articulation results are stored on Aholo's file host. Since the afternoon of 18 Nov that host has refused connections from the network the project is built on, so the files are not downloaded yet. Both task ids and result links are saved, and fetching them again costs nothing.</p>
+  <div class="foot"><span>Stash · project report</span><span>5</span></div>
+</section>
+
+<!-- 6. Asset iterations -->
+<section class="page">
+  <div class="eyebrow">Key asset iterations</div>
+  <h2>From a prompt to a piece of furniture you can open</h2>
+  <table style="margin-top:6px;">
+    <tr><th>Asset</th><th>Prompt sent to Lux3D</th><th class="num">Predicted size (m)</th><th class="num">Lux3D GLB</th><th class="num">Web GLB</th><th>Task</th></tr>
+    <tr><td><b>Dresser</b></td><td>a wooden bedroom dresser with three wide drawers stacked vertically, simple modern style, plain front</td><td class="num">0.90 × 0.89 × 0.48</td><td class="num">15.9 MB</td><td class="num">1.6 MB</td><td class="mono">8274825</td></tr>
+    <tr><td><b>Nightstand</b></td><td>a small wooden bedside nightstand with one drawer on top and an open shelf below</td><td class="num">0.47 × 0.60 × 0.29</td><td class="num">14.1 MB</td><td class="num">1.0 MB</td><td class="mono">8274976</td></tr>
+    <tr><td><b>Wardrobe</b></td><td>a tall two-door wooden bedroom wardrobe, closed doors, simple modern style</td><td class="num">1.07 × 2.00 × 0.60</td><td class="num">13.3 MB</td><td class="num">0.8 MB</td><td class="mono">8275152</td></tr>
+    <tr><td><b>Keys</b></td><td>a small ring of three metal house keys with a round red plastic tag</td><td class="num">n/a</td><td class="num">22.5 MB</td><td class="num">2.5 MB</td><td class="mono">8274600</td></tr>
+  </table>
+  <p class="muted" style="font-size:10.5px; margin-top:4px;">Sizes are width × height × depth from aiPredictSize, not measured. Web copies were made locally with glTF-Transform (weld, simplify, 512 px JPEG textures), which cost no credits.</p>
+  <div class="grid g3" style="margin-top:4mm; gap:6mm;">
+    <div class="box"><h3>v1 · Hand-placed boxes</h3><p>The first playable room used the Lux3D pieces as fixed bodies, with plain boxes for the moving parts and joint limits I estimated by hand: drawers slide 0.32 m (nightstand 0.18 m), the wardrobe door swings 1.75 rad and the room door 1.4 rad. Every one of these is marked "estimate" in the room file, on the page and in the URDF.</p></div>
+    <div class="box"><h3>v2 · Lux3D parts and joints</h3><p>On 18 Nov the full-resolution dresser went through part split (30 credits) and the split result went through articulation (28 credits) with the prompt: "Keep the dresser body fixed. Add a sliding joint to each drawer so it pulls straight out toward the front." Both succeeded. Next, these parts and joints replace the boxes, and the joint source changes from "estimate" to "lux3d-articulation".</p></div>
+    <div class="box"><h3>v3 · The real room</h3><p>A friend films their bedroom on an iPhone, with written consent. Reality builds the splat, the pieces are fitted to it, and a tape measure checks each drawer's travel against the joint limits. That comparison goes in a table on the site; until it exists, every limit is called an estimate.</p></div>
+  </div>
+  <div class="grid" style="grid-template-columns: 1.1fr 1fr; gap:7mm; margin-top:5mm; align-items:start;">
+    <figure><img src="shots/02-hide.jpg" alt="" style="height:52mm; object-fit:cover; object-position:left top;"><figcaption><b>v1 in the live game.</b> The three Lux3D pieces at their predicted sizes in the placeholder room. The drawer and door fronts you click are the estimated boxes.</figcaption></figure>
+    <div class="box"><h3>Why the sizes matter</h3><p>The robot's walking and opening times, the odds it starts from and the URDF limits are all computed in metres. Because Lux3D predicts a real-world size for each piece, the dresser, the nightstand and the wardrobe come out at believable proportions to each other and to the robot without hand scaling. A real tape measurement will check those predictions once a real room is scanned.</p></div>
+  </div>
+  <div class="foot"><span>Stash · project report</span><span>6</span></div>
+</section>
+
+<!-- 7. Process fixes -->
+<section class="page">
+  <div class="eyebrow">Process</div>
+  <h2>What changed while building it</h2>
+  <div class="grid g2" style="margin-top:6px; flex:1;">
+    <div>
+      <table>
+        <tr><th style="width:18%">When (IST)</th><th>Change</th></tr>
+        <tr><td>18 Nov 11:00</td><td>First playable version: hide, robot search, share link, URDF export.</td></tr>
+        <tr><td>18 Nov 14:09</td><td>In the floor plan, the three stacked drawers covered each other and only the top one could be clicked. The plan now lays a stack out side by side. Click-through tests added for desktop and phone.</td></tr>
+        <tr><td>18 Nov 14:10</td><td>I had budgeted text-to-3D at 1 credit. The usage page showed 13 per task, so the ledger was corrected and live generation was capped at 3 tasks a day.</td></tr>
+        <tr><td>18 Nov 14:19</td><td>A per-visitor limit on live generation. Room videos and scans are kept out of the repository until the owner consents in writing.</td></tr>
+        <tr><td>18 Nov 14:25</td><td>The URDF button could be clicked before the room loaded. It now stays disabled until then.</td></tr>
+        <tr><td>18 Nov 16:08</td><td>Part split and articulation run on the dresser.</td></tr>
+        <tr><td>18 Nov 19:21</td><td>Simplified Chinese version of the page and the game, picked from the browser language or a toggle.</td></tr>
+        <tr><td>18 Nov 19:45</td><td>Screenshots for this report showed the floor-plan labels on side-by-side drawers running together. Labels now shrink to fit and stay inside the room.</td></tr>
+      </table>
+    </div>
+    <div>
+      <figure><img src="shots/11-how.jpg" alt=""><figcaption><b>On the site.</b> The "How it is made" section lists every saved Lux3D result the room replays, with its task id, credit cost and date, and marks which steps are not done yet.</figcaption></figure>
+    </div>
+  </div>
+  <div class="foot"><span>Stash · project report</span><span>7</span></div>
+</section>
+
+<!-- 8. Robot + URDF -->
+<section class="page">
+  <div class="eyebrow">Embodied AI</div>
+  <h2>The robot, and the room as a robot file</h2>
+  <div class="grid g2" style="margin-top:6px;">
+    <div>
+      <p>The robot is a simulated agent with a stated rule, not a trained policy. Before each move it scores every unopened spot by its chance of holding the object divided by the seconds it would take to walk there, open it and look inside. It opens the best one, and if the object isn't there, it rules that spot out and renormalises.</p>
+      <p>Its starting odds come from the furniture itself: the cube root of each container's volume times a weight for its kind (drawer 1.0, wardrobe 1.2, door 0.5). Hides logged in a room shift the odds through a Dirichlet posterior with a prior weight of 4, so a handful of hides nudges the robot without overwhelming it.</p>
+      <table style="margin-top:4px;">
+        <tr><th>Constant</th><th class="num">Value</th><th>Note</th></tr>
+        <tr><td>Walking speed</td><td class="num">0.6 m/s</td><td rowspan="4" class="muted">Design choices, not measurements of a real robot.</td></tr>
+        <tr><td>Drawer pull speed</td><td class="num">0.25 m/s</td></tr>
+        <tr><td>Door swing speed</td><td class="num">1.2 rad/s</td></tr>
+        <tr><td>Time to look inside</td><td class="num">0.8 s</td></tr>
+      </table>
+      <p class="muted" style="margin-top:8px; font-size:11px;">The search runs ahead of time and is replayed by a pure function of time, so every judge sees the same search for the same hide, and the tests check it frame by frame.</p>
+    </div>
+    <div>
+      <p>The same joints the game animates are exported as URDF: a link for each moving part, a fixed mount for its body, and a prismatic or revolute joint with its axis and limits. Coordinates are converted from the viewer's Y-up to the Z-up that robot tools expect. Each joint carries a comment that says where its limits came from.</p>
+      <pre><span class="c">&lt;!-- Demo bedroom (placeholder). Joint limits marked "estimate" were not measured. --&gt;</span>
+&lt;link name="dresser_top_part"&gt;
+  &lt;visual&gt;&lt;geometry&gt;&lt;box size="0.8 0.44 0.22"/&gt;&lt;/geometry&gt;&lt;/visual&gt;
+&lt;/link&gt;
+<span class="c">&lt;!-- Dresser, top drawer: limits from estimate --&gt;</span>
+&lt;joint name="dresser_top_joint" type="prismatic"&gt;
+  &lt;parent link="room_base"/&gt;
+  &lt;child link="dresser_top_part"/&gt;
+  &lt;origin xyz="-0.55 1.33 0.73" rpy="0 0 0"/&gt;
+  &lt;axis xyz="0 -1 0"/&gt;
+  &lt;limit lower="0" upper="0.32" effort="20" velocity="1"/&gt;
+&lt;/joint&gt;</pre>
+      <p class="muted" style="margin-top:6px; font-size:11px;">An excerpt of the file the site downloads today: six movable joints, all marked as estimates. The renderer and the URDF are two separate outputs built from one room file; Stash does not run a physics engine.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Stash · project report</span><span>8</span></div>
+</section>
+
+<!-- 9. Reliability + credits -->
+<section class="page">
+  <div class="eyebrow">Completeness</div>
+  <h2>A judges' path that does not depend on the API</h2>
+  <div class="grid g2" style="margin-top:6px;">
+    <div>
+      <ul>
+        <li><b>Replays, not live calls.</b> The game loads saved Lux3D results as static files, so it never waits on the API and never spends credits.</li>
+        <li><b>Fallbacks.</b> If WebGL or a model fails, the floor plan takes over. A broken share link starts a fresh round. If live generation hits its cap or fails, the ready-made objects still work.</li>
+        <li><b>Live generation is capped.</b> 3 tasks a day across the account (about 39 credits) and one per visitor every 10 minutes. The API key is only read on the server.</li>
+        <li><b>Health check.</b> <span class="mono">/api/health</span> reports whether the key is set and Lux3D is reachable.</li>
+        <li><b>Credit guard.</b> The offline pipeline caches every result to disk, refuses any call over 20 credits without explicit approval, and keeps a third of the starting credits in reserve. Tests fake the API and spend nothing.</li>
+      </ul>
+    </div>
+    <div>
+      <table>
+        <tr><th>Credit ledger (18 Nov)</th><th class="num">Credits</th><th class="num">Balance</th></tr>
+        <tr><td>Starting credits (first API key, then team credits)</td><td class="num">+3,600</td><td class="num">3,600</td></tr>
+        <tr><td>4 × Lux3D text-to-3D Turbo</td><td class="num">−52</td><td class="num">3,548</td></tr>
+        <tr><td>Lux3D part split, dresser</td><td class="num">−30</td><td class="num">3,518</td></tr>
+        <tr><td>Lux3D articulation, dresser</td><td class="num">−28</td><td class="num">3,490</td></tr>
+      </table>
+      <p class="muted" style="font-size:10.5px; margin-top:4px;">Prices from labs.aholo.ai/pricing, read 18 Nov. The text-to-3D charge was checked against the usage page; the last two rows are from the pipeline's ledger. At least 1,200 credits stay in reserve for judging.</p>
+      <div class="grid g3" style="margin-top:5mm; gap:4mm;">
+        <div><div class="stat">45</div><div class="stat-l">unit tests passing</div></div>
+        <div><div class="stat">12/12</div><div class="stat-l">browser tests on the live URL, desktop and phone</div></div>
+        <div><div class="stat">0</div><div class="stat-l">credits spent by the judges' path</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Stash · project report</span><span>9</span></div>
+</section>
+
+<!-- 10. Status + next -->
+<section class="page">
+  <div class="eyebrow">Final results</div>
+  <h2>What works today, and what is still to come</h2>
+  <div class="grid g2" style="margin-top:6px;">
+    <div>
+      <h3>Working on the live site</h3>
+      <ul>
+        <li>The full loop: hide, robot search with visible odds, result, share link, friend race.</li>
+        <li>Four Lux3D models in an Aholo Viewer room, with a floor-plan fallback.</li>
+        <li>URDF export of every moving part.</li>
+        <li>English and Simplified Chinese.</li>
+        <li>Optional live text-to-3D: type an object, then hide it in the room. Capped per day.</li>
+        <li>Tests run on every push; the latest CI run passed.</li>
+      </ul>
+      <h3 style="margin-top:10px">Not done yet</h3>
+      <ul>
+        <li>The room is a hand-placed placeholder, not a scan.</li>
+        <li>The moving parts are boxes with estimated joints. The Lux3D split and articulation results exist but are not in the game.</li>
+        <li>Spatial Understanding has not been run.</li>
+        <li>No outside players yet, so the Players section on the site is empty.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Next, before the deadline</h3>
+      <ol style="padding-left:16px; margin:0 0 10px;">
+        <li>Download the dresser parts and joints and swap them in for the boxes.</li>
+        <li>Scan a real bedroom with Reality from a friend's iPhone video, with their written consent, and place the furniture in it.</li>
+        <li>Tape-measure drawer travel and door swing and publish them next to the estimated limits.</li>
+        <li>Ask outside players to play cold, and list them, dated, only with permission.</li>
+      </ol>
+      <div class="box">
+        <h3>Where it could go</h3>
+        <p>Once rooms are scanned, each one becomes a real space whose furniture opens on stated joints and exports to URDF, and each hide records where a person chose to put something. A household robot that searches for things needs both kinds of data. A game is a cheap way to collect them.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Stash · project report</span><span>10</span></div>
+</section>
+
+</body>
+</html>

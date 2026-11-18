@@ -2,7 +2,7 @@
 
 Hide something in a real room, then watch a robot search for it, one drawer or door at a time. Send the hide to a friend and see who finds it faster.
 
-Live demo: https://stash-hide-and-seek.vercel.app (no account needed). Status: https://stash-hide-and-seek.vercel.app/api/health
+Live demo: https://stash-hide-and-seek.vercel.app (no account needed; Chinese at `?lang=zh`). Project report: https://stash-hide-and-seek.vercel.app/Stash-report.pdf. Status: https://stash-hide-and-seek.vercel.app/api/health
 
 ## How it works
 
@@ -26,6 +26,8 @@ The robot is a simulated agent with a stated rule: open the spot with the best c
 - If WebGL is unavailable or a model fails to load, the room falls back to a 2D floor plan that plays the same way.
 - Live generation is optional, capped per day, and falls back to the ready-made objects.
 - `/api/health` reports whether the API key is set and reachable.
+
+The report is built from `report/report.html`: `node --experimental-strip-types report/capture.ts all` takes the screenshots from the live site, and `node --experimental-strip-types report/build.ts` prints the PDF.
 
 ## Run locally
 

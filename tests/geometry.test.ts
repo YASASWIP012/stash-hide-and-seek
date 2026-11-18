@@ -52,3 +52,20 @@ describe('floor plan footprints', () => {
     expect(fp.get('alone')!.size[0]).toBe(0.9);
   });
 });
+
+import { fitLabel, labelWidth } from '../src/render/plan-stage.ts';
+
+describe('floor plan labels', () => {
+  it('shrinks a label that is wider than its footprint', () => {
+    const f = fitLabel('middle', 30, 0, -500, 500);
+    expect(labelWidth('middle', f.size)).toBeLessThanOrEqual(26.01);
+  });
+  it('keeps a short label at full size and inside the room', () => {
+    expect(fitLabel('Door', 200, 0, -500, 500).size).toBe(11);
+    const edge = fitLabel('Nightstand', 200, 495, -500, 500);
+    expect(edge.x + labelWidth('Nightstand', edge.size) / 2).toBeLessThanOrEqual(500);
+  });
+  it('counts Chinese glyphs as wider than Latin ones', () => {
+    expect(labelWidth('床头柜')).toBeGreaterThan(labelWidth('abc'));
+  });
+});

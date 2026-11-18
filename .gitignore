@@ -17,3 +17,5 @@ rooms/**/*.mp4
 public/rooms/*/scan.*
 .vercel
 .env*
+
+report/preview-*.png

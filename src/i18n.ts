@@ -215,6 +215,7 @@ export const ZH_HTML: Record<string, string> = {
   'faq.5': '<summary>我的藏法会怎么处理？</summary><p>它们只保存在你的浏览器里，用来为你微调机器人的概率，不会发送到任何服务器。</p>',
   'footer.made': 'Stash。为 Manycore Aholo Global 3D AI Hackathon 制作。',
   'footer.status': '运行状态',
+  'footer.report': '项目报告（PDF）',
 };
 
 /** Chinese for attributes: [data-i18n-aria] and [data-i18n-ph]. */
