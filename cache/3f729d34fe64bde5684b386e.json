@@ -1,0 +1,18 @@
+{
+  "kind": "lux3d.part-split",
+  "taskId": "8331746",
+  "outputs": [
+    "https://qhsmodel.kujiale.com/glbPartsReconstructResult/NL64AAYKTKHRYAABAAAAACA8.glb"
+  ],
+  "raw": {
+    "bizId": "LUX_3D",
+    "status": 3,
+    "outputs": [
+      {
+        "content": "https://qhsmodel.kujiale.com/glbPartsReconstructResult/NL64AAYKTKHRYAABAAAAACA8.glb"
+      }
+    ],
+    "taskId": 8331746
+  },
+  "savedAt": "2026-11-18T15:12:34.640Z"
+}

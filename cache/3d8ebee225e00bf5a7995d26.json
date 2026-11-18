@@ -1,0 +1,18 @@
+{
+  "kind": "lux3d.articulation",
+  "taskId": "8332756",
+  "outputs": [
+    "https://qhsmodel.kujiale.com/ai-generate/3/NL64ARAKTLJMIAABAAAAAAY8.zip"
+  ],
+  "raw": {
+    "bizId": "LUX_3D",
+    "status": 3,
+    "outputs": [
+      {
+        "content": "https://qhsmodel.kujiale.com/ai-generate/3/NL64ARAKTLJMIAABAAAAAAY8.zip"
+      }
+    ],
+    "taskId": 8332756
+  },
+  "savedAt": "2026-11-18T15:25:42.628Z"
+}

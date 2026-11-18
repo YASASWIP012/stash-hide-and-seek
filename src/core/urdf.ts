@@ -57,5 +57,24 @@ function containerXml(c: Container, toZup: (a: readonly number[]) => number[]): 
     `    <axis xyz="${axis}"/>`,
     `    <limit lower="${f(c.joint.lower)}" upper="${f(c.joint.upper)}" effort="20" velocity="1"/>`,
     '  </joint>',
+    // Parts that open together with the main one (a wardrobe's second door) follow it as mimic joints.
+    ...(c.extraParts ?? []).flatMap((x, k) => {
+      const name = `${id}_part${k + 2}`;
+      const ratio = c.joint.upper !== 0 ? x.joint.upper / c.joint.upper : 1;
+      return [
+        `  <link name="${name}">`,
+        `    <visual><origin xyz="0 0 0" rpy="1.5708 0 0"/><geometry><mesh filename="${esc(x.mesh)}"/></geometry></visual>`,
+        '  </link>',
+        `  <!-- ${esc(c.label)}, part ${k + 2}: limits from ${x.joint.source}; opens with ${id}_joint -->`,
+        `  <joint name="${name}_joint" type="${x.joint.type}">`,
+        '    <parent link="room_base"/>',
+        `    <child link="${name}"/>`,
+        `    <origin xyz="${v(toZup(x.joint.origin))}" rpy="0 0 ${f(c.box.yaw)}"/>`,
+        `    <axis xyz="${v(toZup(x.joint.axis))}"/>`,
+        `    <limit lower="${f(x.joint.lower)}" upper="${f(x.joint.upper)}" effort="20" velocity="1"/>`,
+        `    <mimic joint="${id}_joint" multiplier="${f(ratio)}" offset="0"/>`,
+        '  </joint>',
+      ];
+    }),
   ];
 }

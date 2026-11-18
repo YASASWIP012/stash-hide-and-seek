@@ -52,6 +52,20 @@ describe('robot voice', () => {
   });
 });
 
+describe('nightstand and wardrobe joints from Lux3D articulation', () => {
+  it('replaces the estimates with Lux3D joints and meshes', () => {
+    const n = room.containers.find((c) => c.id === 'nightstand-drawer')!;
+    expect(n.joint.source).toBe('lux3d-articulation');
+    expect(n.joint.upper).toBeCloseTo(0.197, 3);
+    const w = room.containers.find((c) => c.id === 'wardrobe')!;
+    expect(w.joint.type).toBe('revolute');
+    expect(w.extraParts).toHaveLength(1);
+    for (const m of [n.mesh!, w.mesh!, w.extraParts![0]!.mesh]) expect(readFileSync(`public/${m}`).byteLength).toBeGreaterThan(100_000);
+    // the two doors hinge on opposite edges and turn opposite ways
+    expect(Math.sign(w.joint.axis[1]!)).toBe(-Math.sign(w.extraParts![0]!.joint.axis[1]!));
+  });
+});
+
 describe('dresser joints from Lux3D articulation', () => {
   it('uses the articulation joints and part meshes for all three drawers', () => {
     const drawers = room.containers.filter((c) => c.id.startsWith('dresser-'));
@@ -64,8 +78,11 @@ describe('dresser joints from Lux3D articulation', () => {
     }
     expect(MESSAGES.zh.provNote('Lux3D articulation of the split dresser: x')).toContain('关节');
     const urdf = roomToUrdf(room);
-    expect(urdf.match(/limits from lux3d-articulation/g)).toHaveLength(3);
+    // dresser x3, nightstand, wardrobe door 1 and door 2
+    expect(urdf.match(/limits from lux3d-articulation/g)).toHaveLength(6);
     // Y-up part meshes are turned Z-up in the robot file
-    expect(urdf.match(/rpy="1.5708 0 0"\/><geometry><mesh/g)).toHaveLength(3);
+    expect(urdf.match(/rpy="1.5708 0 0"\/><geometry><mesh/g)).toHaveLength(6);
+    expect(urdf).toContain('<mimic joint="wardrobe_joint" multiplier="1" offset="0"/>');
+    expect(urdf.match(/limits from estimate/g)).toHaveLength(1); // only the room door is left
   });
 });

@@ -33,8 +33,13 @@ export interface Container {
   approach: Vec2;
   /** Shape of the moving part in its closed pose (drawer box or door panel). Defaults to `box`. */
   part?: Box;
-  /** GLB produced by Lux3D for the moving part, if generated. Relative to the site root. */
+  /**
+   * GLB produced by Lux3D for the moving part, authored in its joint frame in the furniture's own
+   * axes (Lux3D articulation output). The furniture's yaw is `box.yaw`. Relative to the site root.
+   */
   mesh?: string;
+  /** Further Lux3D parts that open together with this one, such as a wardrobe's second door. */
+  extraParts?: { mesh: string; joint: Joint }[];
 }
 
 /** A static piece of furniture rendered from a Lux3D model (or a box when no model is ready). */

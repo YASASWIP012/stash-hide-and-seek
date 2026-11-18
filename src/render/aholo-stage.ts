@@ -72,8 +72,16 @@ interface PartNode {
   open: number;
   material: InstanceType<typeof MeshPhongMaterial>;
   base: Rgb;
-  /** For parts drawn with a Lux3D mesh: a thin plate on the front, shown only while highlighted. */
+  /** For parts drawn with a Lux3D mesh: a thin plate on the closed front, shown only while highlighted and shut. */
   plate?: Object3D;
+  /** For Lux3D mesh parts: one mover per moving mesh, each driven by the same open fraction. */
+  movers?: ((fraction: number) => void)[];
+}
+
+/** Rotate a vector in the furniture's own axes by its yaw into room axes (same convention as Object3D.rotation.y). */
+function yawed(v: readonly number[], yaw: number): Vec3 {
+  const s = Math.sin(yaw), c = Math.cos(yaw);
+  return [c * v[0]! + s * v[2]!, v[1]!, -s * v[0]! + c * v[2]!];
 }
 
 export class AholoStage implements Stage {
@@ -219,7 +227,12 @@ export class AholoStage implements Stage {
       const closed = c.part ?? c.box;
       const color: Rgb = c.kind === 'door' ? [0.9, 0.88, 0.84] : [0.62, 0.47, 0.33];
       const material = mat(color);
-      if (c.joint.type === 'revolute') {
+      const lux = c.mesh ? await this.luxParts(baseUrl, c, closed) : null;
+      if (lux) {
+        for (const n of lux.nodes) scene.add(n);
+        scene.add(lux.plate);
+        this.parts.set(c.id, { c, node: lux.nodes[0]!, closed, open: 0, material: lux.material, base: HIGHLIGHT, plate: lux.plate, movers: lux.movers });
+      } else if (c.joint.type === 'revolute') {
         // Pivot at the hinge; the panel hangs off it.
         const pivot = new Object3D();
         pivot.position.set(...c.joint.origin);
@@ -232,15 +245,9 @@ export class AholoStage implements Stage {
         scene.add(pivot);
         this.parts.set(c.id, { c, node: pivot, closed, open: 0, material, base: color });
       } else {
-        const lux = c.mesh ? await this.partMesh(`${baseUrl}${c.mesh}`, c, closed) : null;
-        if (lux) {
-          scene.add(lux.node);
-          this.parts.set(c.id, { c, node: lux.node, closed, open: 0, material: lux.material, base: HIGHLIGHT, plate: lux.plate });
-        } else {
-          const node = boxMesh(closed, color, material);
-          scene.add(node);
-          this.parts.set(c.id, { c, node, closed, open: 0, material, base: color });
-        }
+        const node = boxMesh(closed, color, material);
+        scene.add(node);
+        this.parts.set(c.id, { c, node, closed, open: 0, material, base: color });
       }
     }
 
@@ -255,24 +262,45 @@ export class AholoStage implements Stage {
   }
 
   /**
-   * A Lux3D part mesh rides on a node at the part's closed centre. The mesh's own frame is the
-   * joint frame from articulation, so it is offset by (joint origin - centre). Null if it fails to load.
+   * Lux3D articulation parts. Each mesh is authored in its joint frame, in the furniture's own axes,
+   * so it hangs on a holder at the joint origin turned by the furniture's yaw. Sliding moves the
+   * holder along the joint axis; hinges turn it about the vertical axis. Null if any mesh fails.
    */
-  private async partMesh(url: string, c: Container, closed: Box) {
+  private async luxParts(baseUrl: string, c: Container, closed: Box) {
+    const all = [{ mesh: c.mesh!, joint: c.joint }, ...(c.extraParts ?? [])];
     try {
-      const glb = await this.loadGlb(url);
-      const node = new Object3D();
-      node.position.set(...closed.center);
-      node.rotation.y = closed.yaw;
-      glb.position.set(c.joint.origin[0] - closed.center[0], c.joint.origin[1] - closed.center[1], c.joint.origin[2] - closed.center[2]);
-      node.add(glb);
+      const glbs = await Promise.all(all.map((p) => this.loadGlb(`${baseUrl}${p.mesh}`)));
+      const yaw = c.box.yaw;
+      const nodes: Object3D[] = [];
+      const movers = all.map(({ joint }, k) => {
+        const holder = new Object3D();
+        holder.position.set(...joint.origin);
+        holder.rotation.y = yaw;
+        holder.add(glbs[k]!);
+        nodes.push(holder);
+        if (joint.type === 'prismatic') {
+          const dir = yawed(joint.axis, yaw);
+          return (f: number) => {
+            const q = jointValue(joint.lower, joint.upper, f);
+            holder.position.set(joint.origin[0] + dir[0] * q, joint.origin[1] + dir[1] * q, joint.origin[2] + dir[2] * q);
+          };
+        }
+        const sign = joint.axis[1]! < 0 ? -1 : 1;
+        return (f: number) => {
+          holder.rotation.y = yaw + sign * jointValue(joint.lower, joint.upper, f);
+        };
+      });
       const material = mat(HIGHLIGHT);
-      const plate = boxMesh({ center: [0, 0, closed.size[2] / 2 + 0.008], size: [closed.size[0] * 0.98, closed.size[1] * 0.96, 0.012], yaw: 0 }, HIGHLIGHT, material);
+      const front = yawed([0, 0, closed.size[2] / 2 + 0.008], closed.yaw);
+      const plate = boxMesh(
+        { center: [closed.center[0] + front[0], closed.center[1], closed.center[2] + front[2]], size: [closed.size[0] * 0.98, closed.size[1] * 0.96, 0.012], yaw: closed.yaw },
+        HIGHLIGHT,
+        material,
+      );
       plate.visible = false;
-      node.add(plate);
-      return { node, plate, material };
+      return { nodes, movers, plate, material };
     } catch (e) {
-      console.warn(`part mesh ${url} failed, using a box`, e);
+      console.warn(`Lux3D parts for ${c.id} failed, using a box`, e);
       return null;
     }
   }
@@ -282,7 +310,10 @@ export class AholoStage implements Stage {
     if (!p) return;
     p.open = fraction;
     const q = jointValue(p.c.joint.lower, p.c.joint.upper, fraction);
-    if (p.c.joint.type === 'revolute') {
+    if (p.movers) {
+      for (const m of p.movers) m(fraction);
+      if (p.plate) p.plate.visible = p.plate.visible && fraction < 0.05;
+    } else if (p.c.joint.type === 'revolute') {
       p.node.rotation.y = q;
     } else {
       // Slide along the joint axis, rotated into the container's yaw.
@@ -332,7 +363,9 @@ export class AholoStage implements Stage {
     const visible = p.open > 0.5;
     this.hidden.visible = visible;
     if (p.c.joint.type === 'prismatic') {
-      const n = p.node.position;
+      const q = jointValue(p.c.joint.lower, p.c.joint.upper, p.open);
+      const d = yawed(p.c.joint.axis, p.c.box.yaw);
+      const n = p.movers ? { x: p.closed.center[0] + d[0] * q, y: p.closed.center[1], z: p.closed.center[2] + d[2] * q } : p.node.position;
       this.hidden.position.set(n.x, n.y + p.closed.size[1] / 2 - 0.02, n.z);
     } else {
       const b = p.c.box;
@@ -344,7 +377,7 @@ export class AholoStage implements Stage {
   highlight(containerId: string | null): void {
     for (const [id, p] of this.parts) {
       if (p.plate) {
-        p.plate.visible = id === containerId;
+        p.plate.visible = id === containerId && p.open < 0.05;
         continue;
       }
       const c = id === containerId ? HIGHLIGHT : p.base;

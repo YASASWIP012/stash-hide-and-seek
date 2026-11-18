@@ -48,6 +48,34 @@
       "taskId": "8305519",
       "credits": 28,
       "request": "{\"body\":{\"glbUrl\":\"https://qhsmodel.kujiale.com/glbPartsReconstructResult/NL...\",\"prompt\":\"Keep the dresser body fixed. Add a sliding joint to each drawer so it pulls straight out toward the front, about two thirds of its depth, then slides back closed.\"},\"path\":\"/global/lux3d/v1/articulation-animat"
+    },
+    {
+      "at": "2026-11-18T15:12:34.644Z",
+      "kind": "lux3d.part-split",
+      "taskId": "8331746",
+      "credits": 30,
+      "request": "{\"body\":{\"glbUrl\":\"https://holo-cos.aholo3d.cn/resource/platform/temp/2026/1...\"},\"path\":\"/global/lux3d/v1/part-split/task/create\"}"
+    },
+    {
+      "at": "2026-11-18T15:15:01.919Z",
+      "kind": "lux3d.part-split",
+      "taskId": "8332040",
+      "credits": 30,
+      "request": "{\"body\":{\"glbUrl\":\"https://holo-cos.aholo3d.cn/resource/platform/temp/2026/1...\"},\"path\":\"/global/lux3d/v1/part-split/task/create\"}"
+    },
+    {
+      "at": "2026-11-18T15:21:05.578Z",
+      "kind": "lux3d.articulation",
+      "taskId": "8332245",
+      "credits": 28,
+      "request": "{\"body\":{\"glbUrl\":\"https://qhsmodel.kujiale.com/glbPartsReconstructResult/NL...\",\"prompt\":\"Keep the nightstand body and its open shelf fixed. Add a sliding joint to the top drawer so it pulls straight out toward the front, about two thirds of its depth, then slides back closed.\"},\"path\":\"/global/lux"
+    },
+    {
+      "at": "2026-11-18T15:25:42.632Z",
+      "kind": "lux3d.articulation",
+      "taskId": "8332756",
+      "credits": 28,
+      "request": "{\"body\":{\"glbUrl\":\"https://qhsmodel.kujiale.com/glbPartsReconstructResult/NL...\",\"prompt\":\"Keep the wardrobe body fixed. Add a hinge joint to each of the two front doors so each swings open outward toward the front on its outer vertical edge, about a quarter turn, then closes.\"},\"path\":\"/global/lux3"
     }
   ]
 }

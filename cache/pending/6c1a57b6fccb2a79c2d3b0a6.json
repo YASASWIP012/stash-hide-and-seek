@@ -1,0 +1,11 @@
+{
+  "kind": "lux3d.part-split",
+  "taskId": "8332040",
+  "request": {
+    "path": "/global/lux3d/v1/part-split/task/create",
+    "body": {
+      "glbUrl": "https://holo-cos.aholo3d.cn/resource/platform/temp/2026/11/18/NL6377YKQRHTGAABAAAAADA8.glb"
+    }
+  },
+  "at": "2026-11-18T15:13:14.117Z"
+}

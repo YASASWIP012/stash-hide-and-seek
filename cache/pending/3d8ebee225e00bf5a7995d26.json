@@ -1,0 +1,12 @@
+{
+  "kind": "lux3d.articulation",
+  "taskId": "8332756",
+  "request": {
+    "path": "/global/lux3d/v1/articulation-animation/task/create",
+    "body": {
+      "glbUrl": "https://qhsmodel.kujiale.com/glbPartsReconstructResult/NL64AYQKTJDUSAABAAAAADI8.glb",
+      "prompt": "Keep the wardrobe body fixed. Add a hinge joint to each of the two front doors so each swings open outward toward the front on its outer vertical edge, about a quarter turn, then closes."
+    }
+  },
+  "at": "2026-11-18T15:21:07.007Z"
+}

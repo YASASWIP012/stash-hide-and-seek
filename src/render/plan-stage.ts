@@ -144,7 +144,9 @@ export class PlanStage implements Stage {
       p.el.setAttribute('transform', `${base} translate(0 ${q * S})`);
     } else {
       // Rotate about the hinge, expressed in the plan's coordinates.
-      p.el.setAttribute('transform', `rotate(${(-q * 180) / Math.PI} ${c.joint.origin[0] * S} ${c.joint.origin[2] * S}) ${base}`);
+      // A hinge on -Y (as Lux3D gives a left-hand door) turns the other way.
+      const turn = c.joint.axis[1]! < 0 ? -q : q;
+      p.el.setAttribute('transform', `rotate(${(-turn * 180) / Math.PI} ${c.joint.origin[0] * S} ${c.joint.origin[2] * S}) ${base}`);
     }
     p.el.classList.toggle('is-open', fraction > 0.5);
     this.updateDot();

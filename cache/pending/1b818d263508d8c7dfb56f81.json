@@ -1,0 +1,12 @@
+{
+  "kind": "lux3d.articulation",
+  "taskId": "8332245",
+  "request": {
+    "path": "/global/lux3d/v1/articulation-animation/task/create",
+    "body": {
+      "glbUrl": "https://qhsmodel.kujiale.com/glbPartsReconstructResult/NL64AAYKTKHRYAABAAAAACA8.glb",
+      "prompt": "Keep the nightstand body and its open shelf fixed. Add a sliding joint to the top drawer so it pulls straight out toward the front, about two thirds of its depth, then slides back closed."
+    }
+  },
+  "at": "2026-11-18T15:15:15.858Z"
+}

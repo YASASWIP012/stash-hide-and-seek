@@ -66,7 +66,12 @@
         ],
         "yaw": 0
       },
-      "mesh": "objects/nightstand.glb"
+      "mesh": "rooms/demo/pieces/nightstand-body.glb",
+      "meshOrigin": [
+        1.15,
+        0.0,
+        -1.45
+      ]
     },
     {
       "id": "wardrobe",
@@ -84,7 +89,12 @@
         ],
         "yaw": 1.5707963267948966
       },
-      "mesh": "objects/wardrobe.glb"
+      "mesh": "rooms/demo/pieces/wardrobe-body.glb",
+      "meshOrigin": [
+        -1.5,
+        0.0,
+        0.55
+      ]
     }
   ],
   "containers": [
@@ -211,14 +221,14 @@
       "kind": "drawer",
       "box": {
         "center": [
-          1.15,
-          0.5,
-          -1.43
+          1.1507,
+          0.5025,
+          -1.4257
         ],
         "size": [
-          0.4,
-          0.14,
-          0.26
+          0.3777,
+          0.1133,
+          0.2468
         ],
         "yaw": 0
       },
@@ -230,18 +240,19 @@
           1
         ],
         "origin": [
-          1.15,
-          0.5,
-          -1.43
+          1.1506,
+          0.4852,
+          -1.4252
         ],
         "lower": 0,
-        "upper": 0.18,
-        "source": "estimate"
+        "upper": 0.197,
+        "source": "lux3d-articulation"
       },
       "approach": [
         1.15,
         -0.68
-      ]
+      ],
+      "mesh": "rooms/demo/pieces/nightstand-drawer.glb"
     },
     {
       "id": "wardrobe",
@@ -262,14 +273,14 @@
       },
       "part": {
         "center": [
-          -1.19,
-          1.0,
-          0.55
+          -1.244,
+          1.013,
+          0.552
         ],
         "size": [
-          1.0,
+          0.964,
           1.9,
-          0.03
+          0.1
         ],
         "yaw": 1.5707963267948966
       },
@@ -277,21 +288,43 @@
         "type": "revolute",
         "axis": [
           0,
-          1,
+          -1,
           0
         ],
         "origin": [
-          -1.19,
-          1.0,
-          1.05
+          -1.2425,
+          0.9846,
+          1.0234
         ],
         "lower": 0,
-        "upper": 1.75,
-        "source": "estimate"
+        "upper": 1.57,
+        "source": "lux3d-articulation"
       },
       "approach": [
         -0.55,
         0.3
+      ],
+      "mesh": "rooms/demo/pieces/wardrobe-door-left.glb",
+      "extraParts": [
+        {
+          "mesh": "rooms/demo/pieces/wardrobe-door-right.glb",
+          "joint": {
+            "type": "revolute",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "origin": [
+              -1.2458,
+              0.9942,
+              0.0815
+            ],
+            "lower": 0,
+            "upper": 1.57,
+            "source": "lux3d-articulation"
+          }
+        }
       ]
     },
     {
@@ -394,6 +427,38 @@
       "date": "2026-11-18",
       "artifact": "pieces/dresser-drawer-top.glb",
       "note": "Lux3D articulation of the split dresser: three sliding joints with axis and travel, returned as URDF"
+    },
+    {
+      "step": "lux3d.part-split",
+      "taskId": "8331746",
+      "credits": 30,
+      "date": "2026-11-18",
+      "artifact": "pieces/nightstand-body.glb",
+      "note": "Lux3D part split of the nightstand: separates the drawer from the body"
+    },
+    {
+      "step": "lux3d.articulation",
+      "taskId": "8332245",
+      "credits": 28,
+      "date": "2026-11-18",
+      "artifact": "pieces/nightstand-drawer.glb",
+      "note": "Lux3D articulation of the split nightstand: one sliding joint, returned as URDF"
+    },
+    {
+      "step": "lux3d.part-split",
+      "taskId": "8332040",
+      "credits": 30,
+      "date": "2026-11-18",
+      "artifact": "pieces/wardrobe-body.glb",
+      "note": "Lux3D part split of the wardrobe: separates the two doors from the body"
+    },
+    {
+      "step": "lux3d.articulation",
+      "taskId": "8332756",
+      "credits": 28,
+      "date": "2026-11-18",
+      "artifact": "pieces/wardrobe-door-left.glb",
+      "note": "Lux3D articulation of the split wardrobe: two hinge joints on the outer edges, returned as URDF"
     }
   ]
 }

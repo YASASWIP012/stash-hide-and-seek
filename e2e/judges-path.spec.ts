@@ -43,7 +43,9 @@ test('URDF download is well formed', async ({ page }) => {
   const xml = await (await dl.createReadStream())?.toArray();
   const text = Buffer.concat(xml as Buffer[]).toString('utf8');
   expect(text).toContain('<robot name="demo">');
-  expect(text.match(/type="(prismatic|revolute)"/g)?.length).toBe(6);
+  // six containers, plus the second wardrobe door as a mimic joint
+  expect(text.match(/type="(prismatic|revolute)"/g)?.length).toBe(7);
+  expect(text).toContain("<mimic joint=\"wardrobe_joint\"");
 });
 
 test('Chinese: hide and robot round, and the link works in English', async ({ page }) => {
