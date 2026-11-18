@@ -1,0 +1,28 @@
+# Manual job: download Lux3D task results from Aholo's file host and keep them as a build artifact.
+# Used when the result host is unreachable from the build machine's network.
+name: Fetch Lux3D results
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: Space-separated result URLs on kujiale.com
+        required: true
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download
+        env:
+          URLS: ${{ inputs.urls }}
+        run: |
+          mkdir out
+          for u in $URLS; do
+            case "$u" in https://*.kujiale.com/*) ;; *) echo "refusing $u"; exit 1;; esac
+            curl -fsSL --retry 3 -o "out/$(basename "$u")" "$u"
+          done
+          ls -l out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lux3d-results
+          path: out/
+          retention-days: 3
