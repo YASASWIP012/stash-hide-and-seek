@@ -90,6 +90,15 @@ if (step === 'dresser') {
   await page.screenshot({ path: out('13-dresser-open'), quality: 85, type: 'jpeg', clip: { x: b.x + 230, y: b.y + 120, width: 330, height: 220 } });
   await page.waitForTimeout(400);
 }
+if (step === 'wardrobe') {
+  // Both Lux3D wardrobe doors open on their Lux3D hinges
+  await page.goto(`${BASE}/?lang=en#play`);
+  await ready();
+  await page.locator('#stage').click({ position: { x: 180, y: 240 } });
+  await page.waitForTimeout(250);
+  const b = (await page.locator('#stage').boundingBox())!;
+  await page.screenshot({ path: out('14-wardrobe-open'), quality: 85, type: 'jpeg', clip: { x: b.x, y: b.y + 60, width: 360, height: 360 } });
+}
 if (step === 'plan') {
   await page.goto(`${BASE}/?plan=1&lang=en#play`);
   await page.waitForTimeout(1500);
