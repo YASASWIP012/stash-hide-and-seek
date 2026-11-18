@@ -84,3 +84,17 @@ body[data-phase='robot'] #objects, body[data-phase='seek'] #objects, body[data-p
 .make { display: flex; gap: 8px; margin-top: 16px; }
 .make input { flex: 1; min-width: 0; height: 44px; padding: 0 14px; border-radius: var(--r-pill); border: 0; background: var(--sunk); color: var(--ink); font: inherit; box-shadow: var(--ring); }
 #make-status { margin-top: 12px; min-height: 1.5em; }
+
+/* ---------- Chinese ---------- */
+/* Outfit and Public Sans have no CJK glyphs, so Chinese text falls through to the system CJK face. */
+html[lang^="zh"][data-mood] {
+  --font-display: "Outfit", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-body: "Public Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --display-track: 0;
+}
+html[lang^="zh"] .lead,
+html[lang^="zh"] body { letter-spacing: 0.01em; }
+html[lang^="zh"] .eyebrow,
+html[lang^="zh"] .game__panel h3 { letter-spacing: 0.04em; }
+#lang { margin-left: auto; margin-right: 6px; }
+@media (min-width: 761px) { #lang { margin-left: 0; } }

@@ -6,6 +6,7 @@ import { decodeHide, encodeHide, type SharedHide } from './core/share.ts';
 import { roomToUrdf } from './core/urdf.ts';
 import type { Stage } from './render/stage.ts';
 import { PlanStage } from './render/plan-stage.ts';
+import { applyStatic, detectLang, MESSAGES, type Lang } from './i18n.ts';
 
 interface ObjectEntry {
   id: string;
@@ -18,6 +19,37 @@ interface ObjectEntry {
 const BASE = import.meta.env.BASE_URL;
 const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
 const REPLAY_SPEED = 2; // the robot replay plays at 2x so a round stays short
+
+// ---------- language ----------
+const savedLang = (() => {
+  try {
+    return localStorage.getItem('stash.lang');
+  } catch {
+    return null;
+  }
+})();
+const LANG: Lang = detectLang(location.search, savedLang, navigator.languages ?? [navigator.language]);
+const T = MESSAGES[LANG];
+applyStatic(LANG);
+const langBtn = document.getElementById('lang');
+if (langBtn) {
+  if (LANG === 'zh') {
+    langBtn.textContent = 'EN';
+    langBtn.setAttribute('lang', 'en');
+    langBtn.setAttribute('aria-label', 'Switch to English');
+  }
+  langBtn.addEventListener('click', () => {
+    const next: Lang = LANG === 'zh' ? 'en' : 'zh';
+    try {
+      localStorage.setItem('stash.lang', next);
+    } catch {
+      /* the URL carries it anyway */
+    }
+    const u = new URL(location.href);
+    u.searchParams.set('lang', next);
+    location.href = u.toString();
+  });
+}
 
 // ---------- small per-viewer storage (never required for the game to work) ----------
 const store = {
@@ -62,7 +94,12 @@ async function makeStage(el: HTMLElement, room: RoomManifest, forcePlan: boolean
       el.replaceChildren();
     }
   }
-  const s = new PlanStage(el);
+  const s = new PlanStage(el, {
+    aria: T.planAria,
+    open: T.openLabel,
+    short: (label) =>
+      LANG === 'zh' ? label.replace(/^斗柜/, '').replace(/抽屉$/, '') || label : label.replace(/^Dresser, /, '').replace(/ drawer$/, ''),
+  });
   await s.load(room);
   return s;
 }
@@ -72,24 +109,30 @@ type Phase = 'hide' | 'robot' | 'result' | 'seek' | 'seek-done';
 async function boot() {
   const params = new URLSearchParams(location.search);
   const roomId = params.get('room') ?? 'demo';
-  const room = await getJson<RoomManifest | null>(`rooms/${roomId}/room.json`, null);
-  if (!room) {
-    $('#stage').textContent = 'This room could not be loaded. Try reloading the page.';
+  const raw = await getJson<RoomManifest | null>(`rooms/${roomId}/room.json`, null);
+  if (!raw) {
+    $('#stage').textContent = T.roomLoadFail;
     return;
   }
-  const objects = await getJson<ObjectEntry[]>('objects/index.json', []);
+  // Labels are shown in the viewer's language; ids never change, so shared links work across languages.
+  const room: RoomManifest = {
+    ...raw,
+    containers: raw.containers.map((c) => ({ ...c, label: T.label(c.label) })),
+    fixtures: raw.fixtures.map((f) => ({ ...f, label: T.label(f.label) })),
+  };
+  const objects = (await getJson<ObjectEntry[]>('objects/index.json', [])).map((o) => ({ ...o, label: T.label(o.label) }));
   const hideables = objects.filter((o) => !['dresser', 'nightstand', 'wardrobe'].includes(o.id));
   const seedLog = await getJson<HideLogEntry[]>(`rooms/${room.id}/hides.json`, []);
   const labels = Object.fromEntries(room.containers.map((c) => [c.id, c.label]));
 
   renderRoomInfo(room);
   renderHowItsMade(room, objects);
-  renderExport(room);
+  renderExport(raw); // the URDF keeps English labels for robot tools
   void renderProof();
 
   const stageEl = $('#stage');
   const stage = await makeStage(stageEl, room, params.get('plan') === '1');
-  $('#renderer').textContent = stage.kind === '3d' ? 'Aholo Viewer' : 'Floor plan (3D unavailable)';
+  $('#renderer').textContent = stage.kind === '3d' ? T.renderer3d : T.rendererPlan;
 
   let phase: Phase = 'hide';
   let objectId = hideables[0]?.id ?? 'keys';
@@ -131,10 +174,10 @@ async function boot() {
     phase = p;
     document.body.dataset.phase = p;
     const steps: Record<Phase, string> = {
-      hide: 'Pick an object, then click a drawer, the wardrobe or the door to hide it.',
-      robot: 'The robot is searching. It opens the spot it rates best per second of effort.',
+      hide: T.stepHide,
+      robot: T.stepRobot,
       result: '',
-      seek: 'Your friend hid something here. Click to open drawers and doors. The clock is running.',
+      seek: T.stepSeek,
       'seek-done': '',
     };
     $('#instructions').textContent = steps[p];
@@ -161,7 +204,7 @@ async function boot() {
     const end = (run.events.at(-1)?.t ?? 0) + 0.6;
     const tick = () => {
       const t = ((performance.now() - t0) / 1000) * REPLAY_SPEED;
-      const f = sampleReplay(run!.events, t, room.spawn, labels);
+      const f = sampleReplay(run!.events, t, room.spawn, labels, T.voice);
       stage.setRobot(f.robot, f.heading);
       for (const c of room.containers) stage.setOpen(c.id, f.open[c.id] ?? 0);
       stage.highlight(f.next);
@@ -179,11 +222,11 @@ async function boot() {
     const found = run?.foundAt != null;
     const robotTime = run?.foundAt ?? 60;
     $('#result-title').textContent = found
-      ? `The robot found it in ${robotTime.toFixed(1)} s.`
-      : 'The robot ran out of time. You out-hid it.';
+      ? T.robotFound(robotTime.toFixed(1))
+      : T.robotGaveUp;
     $('#result-body').textContent = found
-      ? `It opened ${run!.order.length} ${run!.order.length === 1 ? 'spot' : 'spots'}. Send the hide to a friend and see if they beat the robot.`
-      : 'Send the hide to a friend and see if a person does better.';
+      ? T.robotBody(run!.order.length)
+      : T.robotBodyNotFound;
     const token = encodeHide({ v: 1, room: room.id, container: hiddenIn!, object: objectId, hiderTime: robotTime });
     const url = `${location.origin}${location.pathname}?room=${room.id}#h=${token}`;
     ($('#share-url') as HTMLInputElement).value = url;
@@ -198,7 +241,7 @@ async function boot() {
       store.set('stash.hides', log.slice(-200));
       stage.setHidden(id, objUrl(objectId));
       stage.setOpen(id, 1);
-      $('#say').textContent = `Hidden in: ${labels[id]}. The robot starts in a moment.`;
+      $('#say').textContent = T.hiddenIn(labels[id] ?? id);
       setTimeout(() => {
         stage.setOpen(id, 0);
         setTimeout(playRobot, 500);
@@ -213,9 +256,9 @@ async function boot() {
         cancelAnimationFrame(raf);
         const robot = shared.hiderTime;
         $('#result-title').textContent =
-          robot !== undefined && t < robot ? `You found it in ${t.toFixed(1)} s. You beat the robot.` : `You found it in ${t.toFixed(1)} s.`;
+          robot !== undefined && t < robot ? T.youFoundBeat(t.toFixed(1)) : T.youFound(t.toFixed(1));
         $('#result-body').textContent =
-          robot !== undefined ? `The robot needed ${robot.toFixed(1)} s on the same hide. You opened ${seekOpened.size} spots.` : '';
+          robot !== undefined ? T.seekBody(robot.toFixed(1), seekOpened.size) : '';
         ($('#share-url') as HTMLInputElement).value = location.href.split('#')[0]!;
         $('#result').hidden = false;
       } else {
@@ -235,7 +278,7 @@ async function boot() {
     const v = ($('#share-url') as HTMLInputElement).value;
     try {
       await navigator.clipboard.writeText(v);
-      $('#copy').textContent = 'Copied';
+      $('#copy').textContent = T.copied;
     } catch {
       ($('#share-url') as HTMLInputElement).select();
     }
@@ -246,7 +289,7 @@ async function boot() {
     const token = location.hash.match(/#h=([^&]+)/)?.[1];
     const h = token ? decodeHide(token) : null;
     if (!h || h.room !== room.id || !labels[h.container]) {
-      if (token) $('#say').textContent = 'That link looks broken, so here is a fresh round instead.';
+      if (token) $('#say').textContent = T.brokenLink;
       return false;
     }
     shared = h;
@@ -260,7 +303,7 @@ async function boot() {
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    $('#say').textContent = h.hiderTime !== undefined ? `Time to beat: the robot took ${h.hiderTime.toFixed(1)} s.` : '';
+    $('#say').textContent = h.hiderTime !== undefined ? T.timeToBeat(h.hiderTime.toFixed(1)) : '';
     document.getElementById('play')?.scrollIntoView({ behavior: 'smooth' });
     return true;
   };
@@ -277,7 +320,7 @@ async function boot() {
     const status = $('#make-status');
     const btn = $<HTMLButtonElement>('#make-btn');
     btn.disabled = true;
-    status.textContent = 'Lux3D is generating your object. This usually takes 20 to 40 seconds.';
+    status.textContent = T.genStart;
     try {
       type R = { ok: boolean; done?: boolean; glbUrl?: string; taskId?: string; reason?: string };
       const start = (await (await fetch('/api/generate', {
@@ -297,9 +340,9 @@ async function boot() {
       live.set(id, { id, label: prompt.slice(0, 24), file: j.glbUrl, taskId: start.taskId, step: 'lux3d.text-to-3d.turbo' });
       objectId = id;
       drawChips();
-      status.textContent = `Done. Task ${start.taskId}. It is now selected: hide it in the room above.`;
+      status.textContent = T.genDone(start.taskId);
     } catch (err) {
-      status.textContent = `Live generation is unavailable right now (${(err as Error).message}). The ready-made objects still work.`;
+      status.textContent = T.genFail((err as Error).message);
     } finally {
       btn.disabled = false;
     }
@@ -331,15 +374,13 @@ function renderRoomInfo(room: RoomManifest) {
   (window as unknown as { __room?: RoomManifest }).__room = room;
   const badge = $('#room-status');
   badge.textContent =
-    room.status === 'placeholder'
-      ? 'Placeholder room. Furniture is real Lux3D output; the moving parts are estimated boxes until the first phone scan is processed.'
-      : `Real room${room.owner ? ` from ${room.owner}` : ''}, scanned ${room.capturedOn ?? ''}.`;
+    room.status === 'placeholder' ? T.placeholderRoom : T.realRoom(room.owner ?? undefined, room.capturedOn ?? '');
 }
 
 function renderHowItsMade(room: RoomManifest, objects: ObjectEntry[]) {
   const list = $('#provenance');
   if (!room.provenance.length) {
-    list.innerHTML = '<li class="t-small">No API results recorded for this room yet.</li>';
+    list.innerHTML = `<li class="t-small">${T.noProv}</li>`;
     return;
   }
   list.replaceChildren(
@@ -349,8 +390,8 @@ function renderHowItsMade(room: RoomManifest, objects: ObjectEntry[]) {
       const obj = objects.find((o) => p.artifact?.endsWith(`${o.id}.glb`));
       li.innerHTML = `<span class="prov__step t-mono"></span><span class="prov__what"></span><span class="prov__meta t-mono"></span>`;
       li.querySelector('.prov__step')!.textContent = p.step;
-      li.querySelector('.prov__what')!.textContent = obj ? `${obj.label}: ${p.note ?? ''}` : (p.note ?? p.artifact ?? '');
-      li.querySelector('.prov__meta')!.textContent = `task ${p.taskId} · ${p.credits} credit${p.credits === 1 ? '' : 's'} · ${p.date}`;
+      li.querySelector('.prov__what')!.textContent = obj ? `${obj.label}: ${T.provNote(p.note ?? '')}` : p.note ? T.provNote(p.note) : (p.artifact ?? '');
+      li.querySelector('.prov__meta')!.textContent = T.provMeta(String(p.taskId), p.credits, p.date);
       return li;
     }),
   );
@@ -368,7 +409,7 @@ function renderExport(room: RoomManifest) {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
   const est = room.containers.filter((c) => c.joint.source === 'estimate').length;
-  $('#urdf-note').textContent = `${room.containers.length} moving parts. ${est} of them have estimated joint limits, labelled as such inside the file.`;
+  $('#urdf-note').textContent = T.urdfNote(room.containers.length, est);
 }
 
 interface ProofRecord {
@@ -397,7 +438,7 @@ async function renderProof() {
 boot().catch((e) => {
   console.error(e);
   const el = document.getElementById('stage');
-  if (el) el.textContent = 'Something went wrong loading the room. Reload to try again.';
+  if (el) el.textContent = T.bootFail;
 });
 
 // Reveal-on-scroll for marketing sections.

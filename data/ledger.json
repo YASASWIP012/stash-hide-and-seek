@@ -34,6 +34,20 @@
       "kind": "correction",
       "credits": 48,
       "note": "Usage page shows text-to-3d Turbo billed 13 per task, not 1. 4 tasks: 52 billed, 4 recorded. Balance now matches labs.aholo.ai/usage (3,548)."
+    },
+    {
+      "at": "2026-11-18T10:38:46.740Z",
+      "kind": "lux3d.part-split",
+      "taskId": "8305408",
+      "credits": 30,
+      "request": "{\"body\":{\"glbUrl\":\"https://holo-cos.aholo3d.cn/resource/platform/temp/2026/1...\"},\"path\":\"/global/lux3d/v1/part-split/task/create\"}"
+    },
+    {
+      "at": "2026-11-18T10:58:47.695Z",
+      "kind": "lux3d.articulation",
+      "taskId": "8305519",
+      "credits": 28,
+      "request": "{\"body\":{\"glbUrl\":\"https://qhsmodel.kujiale.com/glbPartsReconstructResult/NL...\",\"prompt\":\"Keep the dresser body fixed. Add a sliding joint to each drawer so it pulls straight out toward the front, about two thirds of its depth, then slides back closed.\"},\"path\":\"/global/lux3d/v1/articulation-animat"
     }
   ]
 }

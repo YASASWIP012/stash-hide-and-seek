@@ -45,3 +45,26 @@ test('URDF download is well formed', async ({ page }) => {
   expect(text).toContain('<robot name="demo">');
   expect(text.match(/type="(prismatic|revolute)"/g)?.length).toBe(6);
 });
+
+test('Chinese: hide and robot round, and the link works in English', async ({ page }) => {
+  await page.goto('/?plan=1&lang=zh#play');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
+  await expect(page.locator('#instructions')).toContainText('选一件物品');
+  await expect(page.locator('#lang')).toHaveText('EN');
+  await page.getByRole('button', { name: '打开床头柜抽屉' }).click();
+  await expect(page.locator('#result')).toBeVisible({ timeout: 60_000 });
+  await expect(page.locator('#result-title')).toContainText('机器人');
+  const link = await page.locator('#share-url').inputValue();
+  await page.goto(link.replace(/^https?:\/\/[^/]+/, '').replace('?room=demo', '?room=demo&plan=1&lang=en'));
+  await expect(page.locator('#instructions')).toContainText('Your friend hid something');
+  await page.getByRole('button', { name: 'Open Nightstand drawer' }).click();
+  await expect(page.locator('#result-title')).toContainText('You found it');
+});
+
+test('the language button switches and remembers', async ({ page }) => {
+  await page.goto('/?plan=1');
+  await page.locator('#lang').click();
+  await expect(page.locator('#instructions')).toContainText('选一件物品');
+  await page.goto('/?plan=1');
+  await expect(page.locator('h1')).toContainText('把东西藏进真实房间');
+});

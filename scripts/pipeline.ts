@@ -7,7 +7,7 @@
 //   npm run pipeline -- scan <roomId> --video rooms/raw/room1.mov [--quality low|normal] --approve 50
 //   npm run pipeline -- piece <roomId> <containerId> --image frame.jpg [--image frame2.jpg]   (G1, up to 20)
 //   npm run pipeline -- split <roomId> <containerId> --approve 30
-//   npm run pipeline -- articulate <roomId> <containerId> --prompt "the top drawer slides out" --approve 28
+//   npm run pipeline -- articulate <roomId> <containerId> --prompt "the top drawer slides out" --approve 28 [--url <parts glb>]
 //
 // Every paid step checks the credit rule, then the cache. Results land in public/ for the site.
 
@@ -64,6 +64,10 @@ async function main() {
   const save = async (r: TaskResult, dir: string, name: string, pick = (u: string) => /\.glb(\?|$)/i.test(u)) => {
     const url = r.outputs.find(pick) ?? r.outputs[0];
     if (!url) throw new Error(`task ${r.taskId} returned no files`);
+    // Keep every file the task returned; result links expire after 2 hours.
+    for (const [i, u] of r.outputs.entries()) {
+      if (u !== url) await download(u, FILES, `${r.taskId}-${i}${extname(new URL(u).pathname) || '.bin'}`);
+    }
     const ext = extname(new URL(url).pathname) || '.bin';
     const cached = await download(url, FILES, `${r.taskId}${ext}`);
     await mkdir(dir, { recursive: true });
@@ -132,9 +136,13 @@ async function main() {
         r = await client.imgTo3d(urls);
         name = `${containerId}.mesh`;
       } else {
+        // --url reuses a model already on Aholo's servers (for example the previous step's result).
         const src = join(dir, `${containerId}.${cmd === 'split' ? 'mesh' : 'parts'}.glb`);
-        if (!existsSync(src)) throw new Error(`missing ${src}; run the previous step first`);
-        const url = await uploadLocal(src);
+        let url = flag('url');
+        if (!url) {
+          if (!existsSync(src)) throw new Error(`missing ${src}; run the previous step first`);
+          url = await uploadLocal(src);
+        }
         if (cmd === 'split') {
           r = await client.partSplit(url);
           name = `${containerId}.parts`;

@@ -20,6 +20,13 @@ function rect(b: Box, cls: string) {
   return r;
 }
 
+/** Words the floor plan shows or reads out, so it can be localised. */
+export interface PlanText {
+  aria: string;
+  open: (label: string) => string;
+  short: (label: string) => string;
+}
+
 export class PlanStage implements Stage {
   readonly kind = 'plan' as const;
   private svg: SVGSVGElement;
@@ -32,11 +39,20 @@ export class PlanStage implements Stage {
   private dot: SVGCircleElement;
   private cb: (id: string) => void = () => {};
 
-  constructor(el: HTMLElement) {
+  private text: PlanText;
+  constructor(
+    el: HTMLElement,
+    text: PlanText = {
+      aria: 'Floor plan of the room. Click a container to open it.',
+      open: (label) => `Open ${label}`,
+      short: (label) => label.replace(/^Dresser, /, '').replace(/ drawer$/, ''),
+    },
+  ) {
+    this.text = text;
     this.svg = document.createElementNS(NS, 'svg');
     this.svg.setAttribute('class', 'plan');
     this.svg.setAttribute('role', 'img');
-    this.svg.setAttribute('aria-label', 'Floor plan of the room. Click a container to open it.');
+    this.svg.setAttribute('aria-label', this.text.aria);
     el.appendChild(this.svg);
     this.robot = document.createElementNS(NS, 'g');
     this.dot = document.createElementNS(NS, 'circle');
@@ -61,7 +77,7 @@ export class PlanStage implements Stage {
       const r = rect(fb, 'plan__part');
       r.setAttribute('tabindex', '0');
       r.setAttribute('role', 'button');
-      r.setAttribute('aria-label', `Open ${c.label}`);
+      r.setAttribute('aria-label', this.text.open(c.label));
       const go = () => this.cb(c.id);
       r.addEventListener('click', go);
       r.addEventListener('keydown', (e) => {
@@ -71,7 +87,7 @@ export class PlanStage implements Stage {
         }
       });
       const t = document.createElementNS(NS, 'text');
-      t.textContent = c.label.replace(/^Dresser, /, '').replace(/ drawer$/, '');
+      t.textContent = this.text.short(c.label);
       t.setAttribute('x', String(fb.center[0] * S));
       t.setAttribute('y', String(fb.center[2] * S + 4));
       t.setAttribute('class', 'plan__label');
