@@ -1,10 +1,10 @@
-// POST { prompt } starts one Lux3D Turbo text-to-3D task (1 credit) and returns its id.
+// POST { prompt } starts one Lux3D Turbo text-to-3D task (13 credits) and returns its id.
 // GET ?taskId= checks it (free). A daily cap protects the credit reserve; when the cap is
 // reached or anything fails, the client falls back to the ready-made objects.
 
 import { json, key, lux, tasksToday } from './_lux.js';
 
-const DAILY_CAP = Number(process.env.LIVE_DAILY_CAP ?? 25);
+const DAILY_CAP = Number(process.env.LIVE_DAILY_CAP ?? 3);
 
 export async function POST(request: Request): Promise<Response> {
   if (!key()) return json({ ok: false, reason: 'live generation is switched off' }, 503);

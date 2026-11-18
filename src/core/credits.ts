@@ -18,7 +18,7 @@ export type CallKind =
 export const COST: Record<CallKind, number> = {
   'lux3d.img-to-3d.turbo': 1,
   'lux3d.img-to-3d.g1': 20, // budget at the Pro price until the first real call confirms which tier G1 bills as
-  'lux3d.text-to-3d.turbo': 1,
+  'lux3d.text-to-3d.turbo': 13, // verified 18 Nov: usage page billed 13 per task (text to image, then image to mesh)
   'lux3d.part-split': 30,
   'lux3d.articulation': 28,
   'lux3d.export': 1,

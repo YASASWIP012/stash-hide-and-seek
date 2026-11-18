@@ -28,6 +28,12 @@
       "taskId": "8275152",
       "credits": 1,
       "request": "{\"body\":{\"aiPredictSize\":true,\"outputFormat\":[\"glb\"],\"prompt\":\"a tall two-door wooden bedroom wardrobe, closed doors, simple modern style\",\"version\":\"G1-Turbo\"},\"path\":\"/global/lux3d/v1/generate/text-to-3d/task/create\"}"
+    },
+    {
+      "at": "2026-11-18T05:45:00.000Z",
+      "kind": "correction",
+      "credits": 48,
+      "note": "Usage page shows text-to-3d Turbo billed 13 per task, not 1. 4 tasks: 52 billed, 4 recorded. Balance now matches labs.aholo.ai/usage (3,548)."
     }
   ]
 }

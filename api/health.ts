@@ -16,7 +16,7 @@ export async function GET(): Promise<Response> {
     try {
       out.lux3dReachable = true;
       out.liveTasksToday = await tasksToday();
-      out.liveDailyCap = Number(process.env.LIVE_DAILY_CAP ?? 25);
+      out.liveDailyCap = Number(process.env.LIVE_DAILY_CAP ?? 3);
     } catch (e) {
       out.lux3dReachable = false;
       out.lux3dError = (e as Error).message.slice(0, 120);
