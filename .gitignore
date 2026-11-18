@@ -15,3 +15,5 @@ rooms/**/*.mov
 rooms/**/*.mp4
 *.insv
 public/rooms/*/scan.*
+.vercel
+.env*
