@@ -357,7 +357,9 @@ function renderHowItsMade(room: RoomManifest, objects: ObjectEntry[]) {
 }
 
 function renderExport(room: RoomManifest) {
-  $('#urdf-btn').addEventListener('click', () => {
+  const btn = $<HTMLButtonElement>('#urdf-btn');
+  btn.disabled = false;
+  btn.addEventListener('click', () => {
     const blob = new Blob([roomToUrdf(room)], { type: 'application/xml' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
