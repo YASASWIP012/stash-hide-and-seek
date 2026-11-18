@@ -38,3 +38,17 @@ describe('camera picking', () => {
     expect(pickBox(origin, dir, [{ box: unit, id: 'far' }, near])?.id).toBe('near');
   });
 });
+
+import { planFootprints } from '../src/core/geometry.ts';
+
+describe('floor plan footprints', () => {
+  it('splits a vertical stack side by side so no footprint covers another', () => {
+    const mk = (id: string, y: number) => ({ id, box: { center: [0, y, 0] as [number, number, number], size: [0.9, 0.2, 0.4] as [number, number, number], yaw: 0 } });
+    const fp = planFootprints([mk('bottom', 0.2), mk('top', 0.8), mk('mid', 0.5), { ...mk('alone', 0.5), box: { ...mk('alone', 0.5).box, center: [2, 0.5, 0] } }]);
+    const xs = ['top', 'mid', 'bottom'].map((id) => fp.get(id)!.center[0]);
+    expect(xs[0]).toBeLessThan(xs[1]!);
+    expect(xs[1]).toBeLessThan(xs[2]!);
+    expect(fp.get('top')!.size[0]).toBeLessThan(0.31);
+    expect(fp.get('alone')!.size[0]).toBe(0.9);
+  });
+});

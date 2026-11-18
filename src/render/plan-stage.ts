@@ -2,7 +2,7 @@
 // stage fails, so the game always stays playable.
 
 import type { Box, RoomManifest, Vec2 } from '../core/types.ts';
-import { jointValue } from '../core/geometry.ts';
+import { jointValue, planFootprints } from '../core/geometry.ts';
 import type { Stage } from './stage.ts';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -25,6 +25,7 @@ export class PlanStage implements Stage {
   private svg: SVGSVGElement;
   private room: RoomManifest | null = null;
   private parts = new Map<string, { el: SVGRectElement; label: SVGTextElement }>();
+  private foot = new Map<string, Box>();
   private open = new Map<string, number>();
   private robot: SVGGElement;
   private hiddenIn: string | null = null;
@@ -54,8 +55,10 @@ export class PlanStage implements Stage {
     floor.setAttribute('class', 'plan__floor');
     this.svg.appendChild(floor);
     for (const f of room.fixtures) this.svg.appendChild(rect(f.box, 'plan__fixture'));
+    this.foot = planFootprints(room.containers);
     for (const c of room.containers) {
-      const r = rect(c.part ?? c.box, 'plan__part');
+      const fb = this.foot.get(c.id) ?? c.part ?? c.box;
+      const r = rect(fb, 'plan__part');
       r.setAttribute('tabindex', '0');
       r.setAttribute('role', 'button');
       r.setAttribute('aria-label', `Open ${c.label}`);
@@ -68,9 +71,9 @@ export class PlanStage implements Stage {
         }
       });
       const t = document.createElementNS(NS, 'text');
-      t.textContent = c.label.replace(/^Dresser, /, '');
-      t.setAttribute('x', String(c.box.center[0] * S));
-      t.setAttribute('y', String(c.box.center[2] * S + 4));
+      t.textContent = c.label.replace(/^Dresser, /, '').replace(/ drawer$/, '');
+      t.setAttribute('x', String(fb.center[0] * S));
+      t.setAttribute('y', String(fb.center[2] * S + 4));
       t.setAttribute('class', 'plan__label');
       this.svg.append(r, t);
       this.parts.set(c.id, { el: r, label: t });
@@ -93,7 +96,7 @@ export class PlanStage implements Stage {
     if (!p || !c) return;
     this.open.set(containerId, fraction);
     const q = jointValue(c.joint.lower, c.joint.upper, fraction);
-    const b = c.part ?? c.box;
+    const b = this.foot.get(c.id) ?? c.part ?? c.box;
     const base = `translate(${b.center[0] * S} ${b.center[2] * S}) rotate(${(-b.yaw * 180) / Math.PI})`;
     if (c.joint.type === 'prismatic') {
       p.el.setAttribute('transform', `${base} translate(0 ${q * S})`);
@@ -119,8 +122,9 @@ export class PlanStage implements Stage {
     const shown = !!c && (this.open.get(c.id) ?? 0) > 0.5;
     this.dot.style.display = shown ? '' : 'none';
     if (c) {
-      this.dot.setAttribute('cx', String(c.box.center[0] * S));
-      this.dot.setAttribute('cy', String(c.box.center[2] * S));
+      const fb = this.foot.get(c.id) ?? c.box;
+      this.dot.setAttribute('cx', String(fb.center[0] * S));
+      this.dot.setAttribute('cy', String(fb.center[2] * S));
     }
   }
 

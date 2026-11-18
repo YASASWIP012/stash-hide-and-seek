@@ -85,6 +85,7 @@ async function boot() {
   renderRoomInfo(room);
   renderHowItsMade(room, objects);
   renderExport(room);
+  void renderProof();
 
   const stageEl = $('#stage');
   const stage = await makeStage(stageEl, room, params.get('plan') === '1');
@@ -366,6 +367,29 @@ function renderExport(room: RoomManifest) {
   });
   const est = room.containers.filter((c) => c.joint.source === 'estimate').length;
   $('#urdf-note').textContent = `${room.containers.length} moving parts. ${est} of them have estimated joint limits, labelled as such inside the file.`;
+}
+
+interface ProofRecord {
+  date: string;
+  who: string;
+  what: string;
+  evidence?: string;
+}
+
+async function renderProof() {
+  const recs = await getJson<ProofRecord[]>('proof/records.json', []);
+  if (!recs.length) return;
+  $('#proof-list').replaceChildren(
+    ...recs.map((r) => {
+      const li = document.createElement('li');
+      li.className = 'prov';
+      li.innerHTML = '<span class="prov__step t-mono"></span><span class="prov__what"></span><span class="prov__meta t-mono"></span>';
+      li.querySelector('.prov__step')!.textContent = r.date;
+      li.querySelector('.prov__what')!.textContent = `${r.who}: ${r.what}`;
+      li.querySelector('.prov__meta')!.textContent = r.evidence ?? '';
+      return li;
+    }),
+  );
 }
 
 boot().catch((e) => {

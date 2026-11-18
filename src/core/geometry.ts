@@ -86,3 +86,34 @@ export function pickBox<T extends { box: Box }>(origin: Vec3, dir: Vec3, items: 
 export function jointValue(lower: number, upper: number, f: number): number {
   return lower + (upper - lower) * Math.min(1, Math.max(0, f));
 }
+
+/**
+ * Top-down footprints for a floor plan. Containers stacked vertically (same spot, different
+ * heights, like dresser drawers) would cover each other from above, so each stack is split
+ * side by side: highest on the left. Returns a box per container id in plan coordinates.
+ */
+export function planFootprints<T extends { id: string; box: Box; part?: Box }>(items: T[], tol = 0.05): Map<string, Box> {
+  const out = new Map<string, Box>();
+  const groups: T[][] = [];
+  for (const it of items) {
+    const g = groups.find((gr) => {
+      const b = gr[0]!.box;
+      return Math.abs(b.center[0] - it.box.center[0]) < tol && Math.abs(b.center[2] - it.box.center[2]) < tol;
+    });
+    if (g) g.push(it);
+    else groups.push([it]);
+  }
+  for (const g of groups) {
+    g.sort((a, b) => b.box.center[1] - a.box.center[1]);
+    const n = g.length;
+    g.forEach((it, i) => {
+      const b = it.part ?? it.box;
+      if (n === 1) return out.set(it.id, b);
+      const w = b.size[0] / n;
+      const off = -b.size[0] / 2 + w * (i + 0.5);
+      const c = Math.cos(b.yaw), s = Math.sin(b.yaw);
+      out.set(it.id, { center: [b.center[0] + c * off, b.center[1], b.center[2] - s * off], size: [w * 0.94, b.size[1], b.size[2]], yaw: b.yaw });
+    });
+  }
+  return out;
+}
